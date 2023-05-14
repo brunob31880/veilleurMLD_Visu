@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/veilleurmld/static/css/main.0354f91a.css",
+    "main.js": "/veilleurmld/static/js/main.4a30448f.js",
+    "static/js/787.b9551075.chunk.js": "/veilleurmld/static/js/787.b9551075.chunk.js",
+    "index.html": "/veilleurmld/index.html",
+    "main.0354f91a.css.map": "/veilleurmld/static/css/main.0354f91a.css.map",
+    "main.4a30448f.js.map": "/veilleurmld/static/js/main.4a30448f.js.map",
+    "787.b9551075.chunk.js.map": "/veilleurmld/static/js/787.b9551075.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0354f91a.css",
+    "static/js/main.4a30448f.js"
+  ]
+}
