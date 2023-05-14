@@ -1,0 +1,24 @@
+/* Etiquette.css */
+
+.etiquette {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid black;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .etiquette:hover {
+    background-color: lightgray;
+  }
+  
+  .etiquette div {
+    margin: 0 10px;
+  }
+
+.bold {
+    font-weight: bold;
+  }
+  

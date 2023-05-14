@@ -1,0 +1,32 @@
+image:  docker:20.10.17
+cache:
+  paths:
+    - node_modules/
+    - .cache/
+    - public/
+    - build/
+stages:
+  - build
+  - deploy
+build:
+  stage: build
+  artifacts:
+    expire_in: 2 weeks
+    when: always
+    paths:
+      - build
+  script: 
+  - echo 'Fabrication'
+  - apk update && apk add npm
+  - npm install --legacy-peer-deps
+  - CI=false npm run build
+pages:
+  stage: deploy
+  script:
+  - echo 'Deploiement sur les gitlab pages'
+  - rm -Rf public/
+  - mv build public
+  artifacts:
+    paths:
+    - public
+    expire_in: 1h
