@@ -13,7 +13,7 @@ const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
                 isAuthenticated ? (
                     <RouteComponent {...routeProps} {...rest} />
                 ) : (
-                    <Redirect to="/login" />
+                    <Redirect to="/veilleurMLD_Visu/login" />
                 )
             }
         />

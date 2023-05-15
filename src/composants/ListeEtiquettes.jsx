@@ -20,6 +20,7 @@ const ListeEtiquettes = ({ etiquettes }) => {
                         canal={etiquette.channel_name}
                         sujet={etiquette.subject}
                         texte={etiquette.text}
+                        url={etiquette.url}
                     />
                 </div>
             ))}

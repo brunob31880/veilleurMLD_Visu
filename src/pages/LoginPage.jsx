@@ -19,7 +19,7 @@ const LoginPage = () => {
         if (isLoggedIn) {
             // rediriger vers la page d'accueil
             console.log('logged in username=', username, password);
-            history.push("/");
+            history.push("/veilleurMLD_Visu/");
         } else {
             alert('Invalid username or password');
         }
