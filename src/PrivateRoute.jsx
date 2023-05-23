@@ -1,19 +1,19 @@
-import React, {  useContext } from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Route } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
 
 const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
-    const { isAuthenticated } = useContext(AuthContext);
-    
+    const { keycloak } = useContext(AuthContext);
+
     return (
         <Route
             {...rest}
             render={routeProps =>
-                isAuthenticated ? (
+                keycloak.authenticated ? (
                     <RouteComponent {...routeProps} {...rest} />
                 ) : (
-                    <Redirect to="/veilleurMLD_Visu/login" />
+                    null
                 )
             }
         />

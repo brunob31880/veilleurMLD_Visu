@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const Header = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
+  const { keycloak } = useContext(AuthContext);
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    logout();
+    keycloak.logout();
   };
 
   return (
@@ -27,7 +27,7 @@ const Header = () => {
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Veille technologique
         </Typography>
-        {isAuthenticated && (
+        {keycloak.authenticated && (
           <>
             <Typography variant="body2" style={{ marginRight: '10px' }}>
               {currentTime.toLocaleTimeString()}
