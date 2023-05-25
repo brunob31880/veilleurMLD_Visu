@@ -7,10 +7,14 @@ import PrivateRoute from "./PrivateRoute";
 import Header from './Header';
 import VeilleTuyauContext from './VeilleTuyauContext';
 import { ParseClasse, bddConnection } from "./utils/parseUtils";
+
+
+
 function App() {
   /* resultat de l'interrogation elastic search */
   const [veille, setVeille] = useState()
   const [tuyau, setTuyau] = useState()
+
 
   useEffect(() => {
     bddConnection();
@@ -39,7 +43,6 @@ function App() {
       <Router>
         <Header />
         <Switch>
-          <Route exact path="/veilleurMLD_Visu/login" component={LoginPage} />
           <PrivateRoute exact path="/veilleurMLD_Visu" component={HomePage} veille={veille} tuyau={tuyau} />
           <Route component={UnknownPage} /> {/* Route pour la page "unknown" */}
         </Switch>

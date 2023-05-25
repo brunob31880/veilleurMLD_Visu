@@ -1,25 +1,36 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
+import Keycloak from 'keycloak-js';
+
 
 export const AuthContext = createContext();
 
+/**
+ * 
+ * @param {*} param0 
+ * @returns 
+ */
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [keycloak, setKeyCloak] = useState(false);
 
-    const login = (username, password) => {
-        // Ici, vous vérifiez le nom d'utilisateur et le mot de passe avec les valeurs codées en dur
-        if (username === 'admin' && password === 'password') {
-            setIsAuthenticated(true);
-            return true;
-        } else {
-            return false;
-        }
-    };
-    const logout = () => {
-        setIsAuthenticated(false);
-    };
+    useEffect(() => {
+        const keycloak = new Keycloak({
+            "realm": "iet",
+            "url": "https://sso.asap.dsna.fr/auth/",
+            "clientId": "react-auth",
+        });
+        keycloak.init({}).then(authenticated => {
+            setKeyCloak(keycloak);
+            if (keycloak.authenticated) {
+                console.log("User is already authenticated");
+            } else {
+                console.log("User is not authenticated, redirecting to login");
+                keycloak.login();
+            }
+        });
+    }, [])
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ keycloak }}>
             {children}
         </AuthContext.Provider>
     );

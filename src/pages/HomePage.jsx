@@ -36,10 +36,10 @@ const HomePage = ({ veille, tuyau }) => {
     <EtiquetteContext.Provider value={{ selectedEtiquette, handleEtiquetteClick }}>
       <Container maxWidth="xl">
         <Typography variant="h2" gutterBottom>
-          Bienvenue
+          Bienvenue à la veille du pôle MLD
         </Typography>
         <Typography variant="body1">
-          Ceci est une simple page d'accueil pour votre site web.
+         Cherchez, Modifiez des articles de veille ou bien des astuces 
         </Typography>
         <Paper>
           <Tabs
