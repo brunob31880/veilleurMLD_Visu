@@ -17,6 +17,7 @@ function App() {
 
 
   useEffect(() => {
+
     bddConnection();
     ParseClasse("Tuyau", (rep) => {
       console.log("Rep=", rep)
@@ -37,6 +38,9 @@ function App() {
       setVeille(tmp);
     })
   }, []);
+
+
+
 
   return (
     <VeilleTuyauContext.Provider value={{ veille, tuyau }}>

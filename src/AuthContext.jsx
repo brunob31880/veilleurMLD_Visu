@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { parseLogout } from './utils/parseUtils';
 import Keycloak from 'keycloak-js';
 
 
@@ -28,6 +29,16 @@ export const AuthProvider = ({ children }) => {
             }
         });
     }, [])
+
+
+    /**
+     * 
+     */
+    window.onbeforeunload = function () {
+        keycloak.logout();
+        parseLogout();
+    };
+
 
     return (
         <AuthContext.Provider value={{ keycloak }}>

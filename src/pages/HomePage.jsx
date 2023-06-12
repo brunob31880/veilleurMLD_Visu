@@ -51,8 +51,8 @@ const HomePage = ({ veille, tuyau }) => {
             variant="fullWidth"
           >
             <Tab label="Completion" />
-            <Tab label="TechRadar" />
             <Tab label="Recherche" />
+            <Tab label="TechRadar" />
           </Tabs>
         </Paper>
         <TabPanel value={selectedTab} index={0}>
@@ -61,15 +61,18 @@ const HomePage = ({ veille, tuyau }) => {
             <ModifEtiquette />
           </div>
         </TabPanel>
+       
         <TabPanel value={selectedTab} index={1}>
-          <TechRadarChart />
-        </TabPanel>
-        <TabPanel value={selectedTab} index={2}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
             <ListeEtiquettes etiquettes={veille} />
             <SearchComponent />
           </div>
         </TabPanel>
+
+        <TabPanel value={selectedTab} index={2}>
+          <TechRadarChart />
+        </TabPanel>
+
       </Container>
     </EtiquetteContext.Provider>
   );
