@@ -57,3 +57,25 @@ export const bddConnection = () => {
     GetConnection(configs.Parse_user_name, configs.Parse_user_password);
     return Parse;
 }
+
+//
+// Modification d'un élément donné dans une classe avec un id et de nouvelles valeurs
+//
+export const modifyElementInClassWithId = (nomClasse, id, tabnewvalues, callbackOnUp, callbackerror) => {
+    const classe = Parse.Object.extend(nomClasse);
+    const query = new Parse.Query(classe);
+
+    query.get(id).then((object) => {
+        Array.from(tabnewvalues).forEach((cond) => {
+            const { champ, valeurchamp } = cond;
+            object.set(champ, valeurchamp);
+        });
+        object.save().then((response) => {
+            callbackOnUp(response);
+        }
+            , (error) => {
+                callbackerror(error)
+            });
+    });
+}
+

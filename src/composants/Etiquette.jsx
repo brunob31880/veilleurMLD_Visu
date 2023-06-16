@@ -3,7 +3,11 @@ import './Etiquette.css';
 import OpengraphReactComponent from 'opengraph-react';
 import ReactMarkdown from 'react-markdown';
 import { configs } from '../config/config';
-
+/**
+ * 
+ * @param {*} param0 
+ * @returns 
+ */
 const Etiquette = ({ id, date, canal, sujet, texte, url }) => {
     const formattedDate = new Date(date).toLocaleDateString('fr-FR');
 

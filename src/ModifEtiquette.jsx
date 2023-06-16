@@ -3,7 +3,9 @@ import { Button, FormControl,  TextField, Select, MenuItem, Container, Typograph
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { EtiquetteContext } from './pages/HomePage';
-const sujets = ['Sujet 1', 'Sujet 2', 'Sujet 3', 'Sujet 4'];
+import { modifyElementInClassWithId } from './utils/parseUtils';
+import { subjects } from './config/config';
+
 
 const ModifEtiquette = () => {
     const [date, setDate] = useState(null);
@@ -14,16 +16,18 @@ const ModifEtiquette = () => {
 
     useEffect(() => {
         if (selectedEtiquette) {
+            console.log("Selected ",selectedEtiquette)
             // Convertir le timestamp en date
-            const formattedDate = new Date(selectedEtiquette.timestamp).toLocaleDateString('fr-FR');
+            const formattedDate = new Date(selectedEtiquette.timestamp);
             setDate(formattedDate);
             setCanal(selectedEtiquette.channel_name);
-            setSujet(selectedEtiquette.sujet);
+            setSujet(selectedEtiquette.subject[0]);
             setTexte(selectedEtiquette.text);
         }
     }, [selectedEtiquette]);
 
     const handleDateChange = (date) => {
+        console.log("Setting date ",date);
         setDate(date);
     };
 
@@ -42,10 +46,25 @@ const ModifEtiquette = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         // Effectuer une action avec les valeurs sélectionnées
-        console.log('Date:', date);
-        console.log('Canal:', canal);
-        console.log('Sujet:', sujet);
-        console.log('Texte:', texte);
+        //console.log('Date:', date);
+        //console.log('Canal:', canal);
+        //console.log('Sujet:', sujet);
+        //console.log('Texte:', texte);
+        let subjects = [];
+        subjects.push(sujet);
+        const timestamp = Math.floor(date.getTime() / 1000);
+        const tabnewvalues = [
+            { champ: 'Date', valeurchamp: timestamp },
+            { champ: 'subjects', valeurchamp: subjects},
+            { champ: 'channel_name', valeurchamp: canal},
+            { champ: 'text', valeurchamp: texte},
+          ];
+          modifyElementInClassWithId("Veille",selectedEtiquette.objectId,tabnewvalues,()=>{
+            console.log("Done");
+          },(err)=>{
+            console.log("Error");
+          });
+        
     };
 
     return (
@@ -69,7 +88,7 @@ const ModifEtiquette = () => {
                     <FormControl fullWidth margin="normal">
                         <Select value={sujet} onChange={handleSujetChange}>
                             <MenuItem value="">Sélectionnez un sujet</MenuItem>
-                            {sujets.map((sujet) => (
+                            {subjects.map((sujet) => (
                                 <MenuItem key={sujet} value={sujet}>
                                     {sujet}
                                 </MenuItem>

@@ -23,8 +23,8 @@ function App() {
       console.log("Rep=", rep)
       let tmp = [];
       Array.from(rep).forEach(r => {
-        const { channel_name, user_name, subjects, text, timestamp, url } = JSON.parse(JSON.stringify(r));
-        tmp.push({ url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name });
+        const { objectId,channel_name, user_name, subjects, text, timestamp, url } = JSON.parse(JSON.stringify(r));
+        tmp.push({ objectId:objectId,url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name });
       })
       setTuyau(tmp);
     })
@@ -32,8 +32,8 @@ function App() {
       console.log("Rep=", rep)
       let tmp = [];
       Array.from(rep).forEach(r => {
-        const { channel_name, user_name, subjects, text, timestamp, url } = JSON.parse(JSON.stringify(r));
-        tmp.push({ url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name });
+        const { objectId,channel_name, user_name, subjects, text, timestamp, url } = JSON.parse(JSON.stringify(r));
+        tmp.push({ objectId:objectId,url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name });
       })
       setVeille(tmp);
     })
