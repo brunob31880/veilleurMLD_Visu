@@ -62,20 +62,64 @@ export const bddConnection = () => {
 // Modification d'un élément donné dans une classe avec un id et de nouvelles valeurs
 //
 export const modifyElementInClassWithId = (nomClasse, id, tabnewvalues, callbackOnUp, callbackerror) => {
+    console.log("Modifying in", nomClasse, "with id", id, "tabnewvalues", tabnewvalues);
     const classe = Parse.Object.extend(nomClasse);
     const query = new Parse.Query(classe);
-
+  
     query.get(id).then((object) => {
-        Array.from(tabnewvalues).forEach((cond) => {
-            const { champ, valeurchamp } = cond;
-            object.set(champ, valeurchamp);
-        });
-        object.save().then((response) => {
-            callbackOnUp(response);
+      Array.from(tabnewvalues).forEach((cond) => {
+        const { champ, valeurchamp } = cond;
+        if (Array.isArray(valeurchamp)) {
+          object.add(champ, valeurchamp);
+        } else {
+          object.set(champ, valeurchamp);
         }
-            , (error) => {
-                callbackerror(error)
-            });
+      });
+      object.save().then((response) => {
+        callbackOnUp(response);
+      }, (error) => {
+        callbackerror(error);
+      });
     });
-}
+  };
+  
 
+export const subscriptionInLiveQuery = () => {
+    // Abonnement à la base de données dynamique
+    let client = new Parse.LiveQueryClient({
+        applicationId: configs.Parse_Application_ID, // Application ID
+        serverURL: configs.PARSE_LiveQueryDomain, // Example: 'wss://livequerytutorial.PARSE.io'
+        javascriptKey: configs.Parse_javascriptKey
+    });
+    client.open();
+
+    return client;
+}
+/**
+ * 
+ * @param {*} nameClasse 
+ * @param {*} client 
+ */
+export function subscribeForWith(nameClasse, client,loadReload) {
+    console.log("Subscribe for ", nameClasse);
+    var query = new Parse.Query(nameClasse);
+    query.ascending('createdAt').limit(5);
+    var subscription = client.subscribe(query);
+    if (subscription !== undefined && subscription !== null) {
+        subscription.on('create', act => {         
+            console.log("Create ",act);      
+            loadReload()
+        });
+        subscription.on('delete', act => {        
+            console.log("Delete ",act);
+            loadReload()
+        });
+        subscription.on('update', act => {         
+            console.log("Update ",act);
+            loadReload()
+        });
+    }
+    else {
+        console.log("SubscribeFor " + nameClasse + " subscribe === undefined || subscribe === null");
+    }
+}

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import VeilleTuyauContext from './VeilleTuyauContext';
 
+/*
 const data = [
   { subject: 'Tech A', A: 120, B: 110 },
   { subject: 'Tech B', A: 98,  B: 130 },
@@ -13,15 +15,53 @@ const data = [
   { subject: 'Tech I', A: 100, B: 105 },
   { subject: 'Tech J', A: 85,  B: 90 }
 ];
+*/
+const TechRadarChart = ({ etiquettes }) => {
+  const [data, setData] = useState([])
+  useEffect(() => {
+    console.log(etiquettes);
+    let tmp = [];
+    etiquettes.forEach(etiquette => {
+      etiquette.subject.forEach(suj => {
+        tmp.push({
+          subject: suj, A: 50
+        })
+      })
 
-const TechRadarChart = () => {
+    })
+
+    const compteurSujets = {};
+    for (const element of tmp) {
+      const sujet = element.subject;
+      if (compteurSujets[sujet]) {
+        compteurSujets[sujet]++;
+      } else {
+        compteurSujets[sujet] = 1;
+      }
+    }
+    console.log("compteurSujets ", compteurSujets);
+    let tmp2 = [];
+
+
+    for (const clé in compteurSujets) {
+      if (compteurSujets.hasOwnProperty(clé)) {
+        const valeur = compteurSujets[clé];
+        tmp2.push({ subject: clé, A: valeur * 100 / tmp.length });
+      }
+    }
+
+
+    console.log(tmp2)
+    setData(tmp2);
+  }, [etiquettes])
+
   return (
-    <RadarChart cx={300} cy={250} outerRadius={150} width={600} height={500} data={data}>
+    <RadarChart cx={300} cy={250} outerRadius={100} width={600} height={500} data={data}>
       <PolarGrid />
       <PolarAngleAxis dataKey="subject" />
       <PolarRadiusAxis />
       <Radar name="A" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-      <Radar name="B" dataKey="B" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+
     </RadarChart>
   );
 };

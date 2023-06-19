@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, FormControl,  TextField, Select, MenuItem, Container, Typography } from '@mui/material';
+import { Button, FormControl, TextField, Select, MenuItem, Container, Typography } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { EtiquetteContext } from './pages/HomePage';
 import { modifyElementInClassWithId } from './utils/parseUtils';
-import { subjects } from './config/config';
+import { trouverUrls } from './utils/textUtils';
+import VeilleTuyauContext from './VeilleTuyauContext';
+//import { subjects } from './config/config';
 
 
 const ModifEtiquette = () => {
@@ -13,10 +15,11 @@ const ModifEtiquette = () => {
     const [sujet, setSujet] = useState('');
     const [texte, setTexte] = useState('');
     const { selectedEtiquette } = useContext(EtiquetteContext);
+    const { subjects } = useContext(VeilleTuyauContext); //
 
     useEffect(() => {
         if (selectedEtiquette) {
-            console.log("Selected ",selectedEtiquette)
+            console.log("Selected ", selectedEtiquette)
             // Convertir le timestamp en date
             const formattedDate = new Date(selectedEtiquette.timestamp);
             setDate(formattedDate);
@@ -27,7 +30,7 @@ const ModifEtiquette = () => {
     }, [selectedEtiquette]);
 
     const handleDateChange = (date) => {
-        console.log("Setting date ",date);
+        console.log("Setting date ", date);
         setDate(date);
     };
 
@@ -42,7 +45,11 @@ const ModifEtiquette = () => {
     const handleTexteChange = (event) => {
         setTexte(event.target.value);
     };
-
+    const getClassWithChannel = (channel) => {
+        console.log("Searching for channel " + channel)
+        if (channel == "tuyauxmld") return "Tuyau"
+        else return "Veille"
+    }
     const handleSubmit = (event) => {
         event.preventDefault();
         // Effectuer une action avec les valeurs sélectionnées
@@ -53,18 +60,20 @@ const ModifEtiquette = () => {
         let subjects = [];
         subjects.push(sujet);
         const timestamp = Math.floor(date.getTime() / 1000);
+        console.log(trouverUrls(texte));
         const tabnewvalues = [
             { champ: 'Date', valeurchamp: timestamp },
-            { champ: 'subjects', valeurchamp: subjects},
-            { champ: 'channel_name', valeurchamp: canal},
-            { champ: 'text', valeurchamp: texte},
-          ];
-          modifyElementInClassWithId("Veille",selectedEtiquette.objectId,tabnewvalues,()=>{
+            { champ: 'subjects', valeurchamp: subjects },
+            { champ: 'channel_name', valeurchamp: canal },
+            { champ: 'text', valeurchamp: texte },
+            { champ: 'url', valeurchamp: trouverUrls(texte) },
+        ];
+        modifyElementInClassWithId(getClassWithChannel(canal), selectedEtiquette.objectId, tabnewvalues, () => {
             console.log("Done");
-          },(err)=>{
+        }, (err) => {
             console.log("Error");
-          });
-        
+        });
+
     };
 
     return (

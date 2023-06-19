@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import extractName from './utils/textUtils';
+import {extractName} from './utils/textUtils';
 
 const Header = () => {
   const { keycloak } = useContext(AuthContext);

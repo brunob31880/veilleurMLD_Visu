@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button, FormControl, InputLabel, Container, Typography, TextField, Select, MenuItem } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-
-const keywords = ['Keyword 1', 'Keyword 2', 'Keyword 3', 'Keyword 4'];
+import { FilteredEtiquetteContext } from './pages/HomePage';
+import VeilleTuyauContext from './VeilleTuyauContext';
 
 const SearchComponent = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedKeyword, setSelectedKeyword] = useState('');
-
+  const { handleFilteredClick } = useContext(FilteredEtiquetteContext);
+  const { subjects } = useContext(VeilleTuyauContext); //
   const handleStartDateChange = (date) => {
     setStartDate(date);
   };
@@ -28,6 +29,8 @@ const SearchComponent = () => {
     console.log('StartDate:', startDate);
     console.log('EndDate:', endDate);
     console.log('SelectedKeyword:', selectedKeyword);
+    handleFilteredClick(startDate, endDate, selectedKeyword)
+
   };
 
   return (
@@ -57,7 +60,7 @@ const SearchComponent = () => {
             <InputLabel>Mot-clé</InputLabel>
             <Select value={selectedKeyword} onChange={handleKeywordChange}>
               <MenuItem value="">Sélectionnez un mot-clé</MenuItem>
-              {keywords.map((keyword) => (
+              {subjects.map((keyword) => (
                 <MenuItem key={keyword} value={keyword}>
                   {keyword}
                 </MenuItem>
