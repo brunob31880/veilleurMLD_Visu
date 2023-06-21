@@ -60,4 +60,23 @@ export function parseTag(text) {
   return null;
 }
 
-  
+export function truncateText(text, maxCharacters) {
+  if (text.length <= maxCharacters) {
+      return text;
+  }
+
+  let truncatedText = text.substring(0, maxCharacters);
+
+  // Si le caractère à la limite est un espace, nous pouvons simplement ajouter les points de suspension.
+  if (text[maxCharacters] === ' ') {
+      return truncatedText + '...';
+  }
+
+  // Sinon, nous devons trouver le dernier espace dans le texte tronqué et couper à cet endroit.
+  let lastSpaceIndex = truncatedText.lastIndexOf(' ');
+  if (lastSpaceIndex !== -1) {
+      truncatedText = truncatedText.substring(0, lastSpaceIndex);
+  }
+
+  return truncatedText + '...';
+}

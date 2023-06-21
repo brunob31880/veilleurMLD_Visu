@@ -1,10 +1,11 @@
 import React, { createContext, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Container, Typography, Box, Paper, Tabs, Tab } from '@mui/material';
 import SearchComponent from '../SearchComponent';
 import ListeEtiquettes from '../composants/ListeEtiquettes';
 import TechRadarChart from '../TechRadar';
 import ModifEtiquette from '../ModifEtiquette';
-import { tableauFusionne } from '../utils/arrayUtils';
+import { tableauFusionne, comparerChampVide } from '../utils/arrayUtils';
 // Créez un nouveau Context
 export const EtiquetteContext = createContext();
 // Créez un nouveau Context
@@ -31,20 +32,24 @@ const HomePage = ({ veille, tuyau }) => {
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
+  const location = useLocation();
   const handleEtiquetteClick = (etiquette) => {
-    console.log("Setting selected ", etiquette)
+    console.log("Setting selected ", etiquette, " on ", location.pathname)
     setSelectedEtiquette(etiquette);
   };
+  /**
+   * 
+   */
   const handleFilteredClick = (start, end, key) => {
     let res = [];
     console.log("Search between ", start, "and ", end, " for keyword " + key);
-    const t1 = Math.floor(start.getTime() );
-    const t2 = Math.floor(end.getTime() );
+    const t1 = Math.floor(start.getTime());
+    const t2 = Math.floor(end.getTime());
     console.log("Search betweenn ", t1, "and ", t2);
     tableauFusionne(veille, tuyau).forEach((elt) => {
       console.log("Element ", elt)
       const { objectId, channel_name, user_name, subject, text, timestamp, url } = JSON.parse(JSON.stringify(elt));
-      console.log(subject + ' ' + key ,' timestamp '+timestamp + ' t1 '+t1+' t2 '+t2)
+      console.log(subject + ' ' + key, ' timestamp ' + timestamp + ' t1 ' + t1 + ' t2 ' + t2)
       if (timestamp > t1 && timestamp < t2 && subject.indexOf(key) !== -1) res.push(elt);
     })
     setFilteredEtiquettes(res)
@@ -74,23 +79,33 @@ const HomePage = ({ veille, tuyau }) => {
         </Paper>
         <TabPanel value={selectedTab} index={0}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-            <ListeEtiquettes etiquettes={tableauFusionne(veille, tuyau)} />
-            <ModifEtiquette />
+            <div style={{ flex: 2 }}>
+              <ListeEtiquettes etiquettes={tableauFusionne(veille, tuyau).sort(comparerChampVide)} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <ModifEtiquette />
+            </div>
           </div>
         </TabPanel>
 
         <TabPanel value={selectedTab} index={1}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
             <FilteredEtiquetteContext.Provider value={{ filteredEtiquettes, handleFilteredClick }}>
-              <ListeEtiquettes etiquettes={filteredEtiquettes} />
-              <SearchComponent />
+              <div style={{ flex: 2 }}>
+                <ListeEtiquettes etiquettes={filteredEtiquettes} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <SearchComponent />
+              </div>
             </FilteredEtiquetteContext.Provider>
           </div>
         </TabPanel>
-
         <TabPanel value={selectedTab} index={2}>
-          <TechRadarChart etiquettes={tableauFusionne(veille, tuyau)} />
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <TechRadarChart etiquettes={tableauFusionne(veille, tuyau)} />
+          </div>
         </TabPanel>
+
 
       </Container>
     </EtiquetteContext.Provider>

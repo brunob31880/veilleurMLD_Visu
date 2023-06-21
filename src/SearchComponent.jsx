@@ -35,7 +35,7 @@ const SearchComponent = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Container maxWidth="sm">
+      <Container  fixed={true} maxWidth="sm">
         <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
           Recherche
         </Typography>

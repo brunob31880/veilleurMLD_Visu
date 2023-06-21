@@ -15,14 +15,14 @@ function App() {
   const [tuyau, setTuyau] = useState()
   const [subjects, setSubjects] = useState()
   const [client, setClient] = useState()
-
+  const [team, setTeam] = useState()
   const load = (nomClasse, setTer, tmpSubjects) => {
     ParseClasse(nomClasse, (rep) => {
       console.log("Rep=", rep)
       let tmp = [];
       Array.from(rep).forEach(r => {
-        const { objectId, channel_name, user_name, subjects, text, timestamp, url } = JSON.parse(JSON.stringify(r));
-        tmp.push({ objectId: objectId, url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name });
+        const { objectId, channel_name, user_name, subjects, text, timestamp, url,thumbnail } = JSON.parse(JSON.stringify(r));
+        tmp.push({ objectId: objectId, url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name,thumbnail:thumbnail });
         ajouterElements(tmpSubjects, subjects);
       })
       setTer(tmp);
@@ -35,10 +35,22 @@ function App() {
     load("Tuyau",(u)=>setTuyau(u),tmpSubjects);
     setSubjects(tmpSubjects);
   }
-  useEffect(() => {
 
+  const loadTeam=()=>{
+    ParseClasse("Team", (rep) => {
+      let tmp = [];
+      Array.from(rep).forEach(r => {
+        const { objectId, user_name,avatar } = JSON.parse(JSON.stringify(r));
+        tmp.push({ objectId,user_name: user_name,avatar:avatar });
+      })
+      setTeam(tmp);
+    })
+
+  }
+  useEffect(() => {
     bddConnection();
     loadReload();
+    loadTeam();
     let client = subscriptionInLiveQuery();
     setClient(client);
   }, []);
@@ -51,7 +63,7 @@ function App() {
   }, [client]);
 
   return (
-    <VeilleTuyauContext.Provider value={{ veille, tuyau, subjects }}>
+    <VeilleTuyauContext.Provider value={{ veille, tuyau, subjects ,team}}>
       <Router>
         <Header />
         <Switch>

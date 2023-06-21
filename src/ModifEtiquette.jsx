@@ -78,7 +78,7 @@ const ModifEtiquette = () => {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Container maxWidth="sm">
+            <Container fixed={true} minwmaxWidth="sm">
                 <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
                     Modification
                 </Typography>
