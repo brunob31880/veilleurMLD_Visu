@@ -3,9 +3,33 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 10px;
-  border: 1px solid black;
   margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: rgb(13, 19, 34);
   transition: background-color 0.3s ease;
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.red {
+  color: red;
+  animation: blink 1s infinite;
+}
+
+.marked {
+  background-color: rgb(10, 14, 74);
+}
+.selected{
+  background-color: rgb(74, 74, 74);
 }
 
 .etiquette:hover {

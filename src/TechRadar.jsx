@@ -19,7 +19,7 @@ const data = [
 const TechRadarChart = ({ etiquettes }) => {
   const [data, setData] = useState([])
   useEffect(() => {
-    console.log(etiquettes);
+    //console.log(etiquettes);
     let tmp = [];
     etiquettes.forEach(etiquette => {
       etiquette.subject.forEach(suj => {
@@ -46,7 +46,7 @@ const TechRadarChart = ({ etiquettes }) => {
     for (const clé in compteurSujets) {
       if (compteurSujets.hasOwnProperty(clé)) {
         const valeur = compteurSujets[clé];
-        tmp2.push({ subject: clé, A: valeur * 100 / tmp.length });
+        tmp2.push({ subject: clé, A: valeur * 150 / tmp.length });
       }
     }
 
@@ -56,7 +56,7 @@ const TechRadarChart = ({ etiquettes }) => {
   }, [etiquettes])
 
   return (
-    <RadarChart cx={300} cy={250} outerRadius={100} width={600} height={500} data={data}>
+    <RadarChart cx={300} cy={250} outerRadius={150} width={600} height={500} data={data}>
       <PolarGrid />
       <PolarAngleAxis dataKey="subject" />
       <PolarRadiusAxis />

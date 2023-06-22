@@ -1,29 +1,39 @@
+/**
+ * 
+ * @param {*} tableau 
+ * @param {*} elements 
+ */
 export function ajouterElements(tableau, elements) {
-    const tousPresent = elements.every((el) => tableau.includes(el));
-  
-    if (tousPresent) {
-      console.log("Les éléments sont déjà présents :", elements);
-    } else {
-      tableau.push(...elements);
-      console.log("Éléments ajoutés :", elements);
-    }
+  const tousPresent = elements.every((el) => tableau.includes(el));
+  if (tousPresent) {
+    //console.log("Les éléments sont déjà présents :", elements);
+  } else {
+    tableau.push(...elements);
+    //console.log("Éléments ajoutés :", elements);
   }
-  /**
-   * 
-   * @param {*} tableau1 
-   * @param {*} tableau2 
-   * @returns 
-   */
-  export const tableauFusionne=(tableau1,tableau2)=>{
+}
+/**
+ * 
+ * @param {*} tableau1 
+ * @param {*} tableau2 
+ * @returns 
+ */
+export const tableauFusionne = (tableau1, tableau2) => {
+  try {
     const tableauFusionne = [...tableau1, ...tableau2];
-    return tableauFusionne
+    return tableauFusionne;
+  } catch (error) {
+    console.log("Erreur lors de la fusion des tableaux :", error);
+    return [];
   }
+};
 
-  // Fonction de comparaison personnalisée
+
+// Fonction de comparaison personnalisée
 export function comparerChampVide(a, b) {
   // Vérifie si le champ 'subject' est vide pour les objets a et b
-  var subjectVideA = a.subject[0] === '';
-  var subjectVideB = b.subject[0] === '';
+  var subjectVideA = estChampVide(a, 'subject');
+  var subjectVideB = estChampVide(b, 'subject');
 
   // Place les objets avec un champ 'subject' vide en premier
   if (subjectVideA && !subjectVideB) {
@@ -35,6 +45,12 @@ export function comparerChampVide(a, b) {
   // Par défaut, conserve l'ordre d'origine
   return 0;
 }
+
+// Fonction générique pour vérifier si un champ est vide
+function estChampVide(objet, champ) {
+  return objet[champ][0] === '';
+}
+
 
 export function head(array, n) {
   // Vérifie si le tableau est vide ou si n est inférieur ou égal à 0

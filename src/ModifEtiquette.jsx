@@ -5,6 +5,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { EtiquetteContext } from './pages/HomePage';
 import { modifyElementInClassWithId } from './utils/parseUtils';
 import { trouverUrls } from './utils/textUtils';
+import { getClassWithChannel } from './utils/mtmUtils';
 import VeilleTuyauContext from './VeilleTuyauContext';
 //import { subjects } from './config/config';
 
@@ -16,6 +17,7 @@ const ModifEtiquette = () => {
     const [texte, setTexte] = useState('');
     const { selectedEtiquette } = useContext(EtiquetteContext);
     const { subjects } = useContext(VeilleTuyauContext); //
+    const [nouveauSujet, setNouveauSujet] = useState('');
 
     useEffect(() => {
         if (selectedEtiquette) {
@@ -26,6 +28,7 @@ const ModifEtiquette = () => {
             setCanal(selectedEtiquette.channel_name);
             setSujet(selectedEtiquette.subject[0]);
             setTexte(selectedEtiquette.text);
+            setNouveauSujet('');
         }
     }, [selectedEtiquette]);
 
@@ -40,33 +43,37 @@ const ModifEtiquette = () => {
 
     const handleSujetChange = (event) => {
         setSujet(event.target.value);
+        setNouveauSujet(''); // Réinitialiser la valeur du nouveau sujet
     };
 
     const handleTexteChange = (event) => {
         setTexte(event.target.value);
     };
-    const getClassWithChannel = (channel) => {
-        console.log("Searching for channel " + channel)
-        if (channel == "tuyauxmld") return "Tuyau"
-        else return "Veille"
-    }
+    
     const handleSubmit = (event) => {
+
         event.preventDefault();
+
+        // Utiliser soit le sujet sélectionné, soit le nouveau sujet
+        const sujetFinal = nouveauSujet !== '' ? nouveauSujet : sujet;
+
         // Effectuer une action avec les valeurs sélectionnées
         //console.log('Date:', date);
         //console.log('Canal:', canal);
         //console.log('Sujet:', sujet);
         //console.log('Texte:', texte);
-        let subjects = [];
-        subjects.push(sujet);
+        // let subjects = [];
+        // subjects.push(sujet);
         const timestamp = Math.floor(date.getTime() / 1000);
-        console.log(trouverUrls(texte));
+        //console.log(trouverUrls(texte));
         const tabnewvalues = [
             { champ: 'Date', valeurchamp: timestamp },
-            { champ: 'subjects', valeurchamp: subjects },
+            // on passe un tableau car subjects est un tableau
+            { champ: 'subjects', valeurchamp: [sujetFinal] },
             { champ: 'channel_name', valeurchamp: canal },
             { champ: 'text', valeurchamp: texte },
-            { champ: 'url', valeurchamp: trouverUrls(texte) },
+            // a voir pour inclure un tableau d'urls
+            { champ: 'url', valeurchamp: trouverUrls(texte)[0] },
         ];
         modifyElementInClassWithId(getClassWithChannel(canal), selectedEtiquette.objectId, tabnewvalues, () => {
             console.log("Done");
@@ -78,7 +85,7 @@ const ModifEtiquette = () => {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <Container fixed={true} minwmaxWidth="sm">
+            <Container fixed={true} maxWidth="sm" style={{marginTop:selectedEtiquette?selectedEtiquette.offsetTop-400:0}}>
                 <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
                     Modification
                 </Typography>
@@ -105,8 +112,12 @@ const ModifEtiquette = () => {
                         </Select>
                     </FormControl>
                     <FormControl fullWidth margin="normal">
+                        <TextField placeholder="Nouveau sujet" value={nouveauSujet} onChange={(event) => setNouveauSujet(event.target.value)} />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
                         <TextField placeholder="Texte" value={texte} onChange={handleTexteChange} />
                     </FormControl>
+
                     <Button variant="contained" color="primary" fullWidth type="submit">
                         Soumettre
                     </Button>

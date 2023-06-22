@@ -18,7 +18,7 @@ function App() {
   const [team, setTeam] = useState()
   const load = (nomClasse, setTer, tmpSubjects) => {
     ParseClasse(nomClasse, (rep) => {
-      console.log("Rep=", rep)
+      //console.log("Rep=", rep)
       let tmp = [];
       Array.from(rep).forEach(r => {
         const { objectId, channel_name, user_name, subjects, text, timestamp, url,thumbnail } = JSON.parse(JSON.stringify(r));

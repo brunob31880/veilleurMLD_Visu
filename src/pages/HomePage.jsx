@@ -1,11 +1,12 @@
 import React, { createContext, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
 import { Container, Typography, Box, Paper, Tabs, Tab } from '@mui/material';
 import SearchComponent from '../SearchComponent';
 import ListeEtiquettes from '../composants/ListeEtiquettes';
 import TechRadarChart from '../TechRadar';
 import ModifEtiquette from '../ModifEtiquette';
-import { tableauFusionne, comparerChampVide } from '../utils/arrayUtils';
+import { tableauFusionne } from '../utils/arrayUtils';
+import { filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes } from '../utils/etiquettesUtils';
 // Créez un nouveau Context
 export const EtiquetteContext = createContext();
 // Créez un nouveau Context
@@ -26,16 +27,34 @@ const TabPanel = (props) => {
  */
 const HomePage = ({ veille, tuyau }) => {
   const [selectedTab, setSelectedTab] = useState(0);
+  // Etiquette marquée pour modification (tab 1)
+  const [markedEtiquette, setMarkedEtiquette] = useState(null);
+  // Etiquette en modification (tab 0)
   const [selectedEtiquette, setSelectedEtiquette] = useState(null);
   const [filteredEtiquettes, setFilteredEtiquettes] = useState(null);
+  
   //console.log("Veille", veille)
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-  const location = useLocation();
-  const handleEtiquetteClick = (etiquette) => {
-    console.log("Setting selected ", etiquette, " on ", location.pathname)
-    setSelectedEtiquette(etiquette);
+ 
+  // const location = useLocation();
+  const handleEtiquetteClick = (etiquette, index) => {
+    if (selectedTab === 0) {
+      console.log("Setting selected ", etiquette, " on tab ", selectedTab)
+      if (selectedEtiquette && selectedEtiquette.objectId === etiquette.objectId) setSelectedEtiquette(null)
+      else {
+        const selectedEtiquetteElement = document.getElementById(`etiquette-${index}`);
+        const offsetTop = selectedEtiquetteElement.offsetTop;
+        setSelectedEtiquette({ ...etiquette, offsetTop: offsetTop });
+        // console.log("OffsetTop: " + offsetTop)
+      }
+    }
+    else if (selectedTab === 1) {
+      console.log("Setting marked ", etiquette, " on tab ", selectedTab)
+      if (markedEtiquette && markedEtiquette.objectId === etiquette.objectId) setMarkedEtiquette(null)
+      else setMarkedEtiquette(etiquette)
+    }
   };
   /**
    * 
@@ -54,9 +73,19 @@ const HomePage = ({ veille, tuyau }) => {
     })
     setFilteredEtiquettes(res)
   }
+
+  const getFilteredEtiquettes = () => {
+    let fusion = tableauFusionne(veille, tuyau);
+    let malrenseignes = filtrerObjetsMalRenseignes(fusion)
+    if (markedEtiquette) {
+      malrenseignes.unshift(markedEtiquette);
+    }
+    return malrenseignes
+  }
+
   return (
-    <EtiquetteContext.Provider value={{ selectedEtiquette, handleEtiquetteClick }}>
-      <Container maxWidth="xl">
+    <EtiquetteContext.Provider value={{ selectedEtiquette, markedEtiquette, handleEtiquetteClick }}>
+      <Container maxWidth="xl" >
         <Typography variant="h2" gutterBottom>
           Bienvenue à la veille (et aux tuyaux) du pôle MLD
         </Typography>
@@ -78,13 +107,14 @@ const HomePage = ({ veille, tuyau }) => {
           </Tabs>
         </Paper>
         <TabPanel value={selectedTab} index={0}>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }} >
             <div style={{ flex: 2 }}>
-              <ListeEtiquettes etiquettes={tableauFusionne(veille, tuyau).sort(comparerChampVide)} />
+              <ListeEtiquettes etiquettes={getFilteredEtiquettes()} />
             </div>
             <div style={{ flex: 1 }}>
               <ModifEtiquette />
             </div>
+           
           </div>
         </TabPanel>
 
@@ -102,11 +132,9 @@ const HomePage = ({ veille, tuyau }) => {
         </TabPanel>
         <TabPanel value={selectedTab} index={2}>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <TechRadarChart etiquettes={tableauFusionne(veille, tuyau)} />
+            <TechRadarChart etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
           </div>
         </TabPanel>
-
-
       </Container>
     </EtiquetteContext.Provider>
   );

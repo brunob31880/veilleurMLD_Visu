@@ -65,24 +65,27 @@ export const modifyElementInClassWithId = (nomClasse, id, tabnewvalues, callback
     console.log("Modifying in", nomClasse, "with id", id, "tabnewvalues", tabnewvalues);
     const classe = Parse.Object.extend(nomClasse);
     const query = new Parse.Query(classe);
-  
+
     query.get(id).then((object) => {
-      Array.from(tabnewvalues).forEach((cond) => {
-        const { champ, valeurchamp } = cond;
-        if (Array.isArray(valeurchamp)) {
-          object.add(champ, valeurchamp);
-        } else {
-          object.set(champ, valeurchamp);
-        }
-      });
-      object.save().then((response) => {
-        callbackOnUp(response);
-      }, (error) => {
-        callbackerror(error);
-      });
+        Array.from(tabnewvalues).forEach((cond) => {
+            const { champ, valeurchamp } = cond;
+            if (Array.isArray(valeurchamp)) {
+                object.set(champ, valeurchamp);
+                //valeurchamp.forEach((element) => {
+                //    object.add(champ, element);
+                //  });   
+            } else {
+                object.set(champ, valeurchamp);
+            }
+        });
+        object.save().then((response) => {
+            callbackOnUp(response);
+        }, (error) => {
+            callbackerror(error);
+        });
     });
-  };
-  
+};
+
 
 export const subscriptionInLiveQuery = () => {
     // Abonnement à la base de données dynamique
@@ -100,22 +103,22 @@ export const subscriptionInLiveQuery = () => {
  * @param {*} nameClasse 
  * @param {*} client 
  */
-export function subscribeForWith(nameClasse, client,loadReload) {
+export function subscribeForWith(nameClasse, client, loadReload) {
     console.log("Subscribe for ", nameClasse);
     var query = new Parse.Query(nameClasse);
     query.ascending('createdAt').limit(5);
     var subscription = client.subscribe(query);
     if (subscription !== undefined && subscription !== null) {
-        subscription.on('create', act => {         
-            console.log("Create ",act);      
+        subscription.on('create', act => {
+            console.log("Create ", act);
             loadReload()
         });
-        subscription.on('delete', act => {        
-            console.log("Delete ",act);
+        subscription.on('delete', act => {
+            console.log("Delete ", act);
             loadReload()
         });
-        subscription.on('update', act => {         
-            console.log("Update ",act);
+        subscription.on('update', act => {
+            console.log("Update ", act);
             loadReload()
         });
     }
@@ -123,3 +126,17 @@ export function subscribeForWith(nameClasse, client,loadReload) {
         console.log("SubscribeFor " + nameClasse + " subscribe === undefined || subscribe === null");
     }
 }
+
+export const deleteElementInClassWithId = (nomClasse, id, callbackOnDelete, callbackError) => {
+    console.log("Deleting from", nomClasse, "with id", id);
+    const classe = Parse.Object.extend(nomClasse);
+    const query = new Parse.Query(classe);
+
+    query.get(id).then((object) => {
+        object.destroy().then((response) => {
+            callbackOnDelete(response);
+        }, (error) => {
+            callbackError(error);
+        });
+    });
+};
