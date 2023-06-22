@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
+import { makeStyles } from '@material-ui/core/styles';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {extractName} from './utils/textUtils';
 
@@ -8,7 +9,12 @@ const Header = () => {
   const { keycloak } = useContext(AuthContext);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [name,setName]=useState();
-
+  const useStyles = makeStyles((theme) => ({
+    toolbar: {
+      backgroundColor: '#06090D', 
+    },
+  }));
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -34,10 +40,10 @@ const Header = () => {
       setName(extractName(keycloak.tokenParsed.preferred_username));
     }
   },[keycloak])
-
+  const classes = useStyles();
   return (
     <AppBar position="static">
-      <Toolbar>
+      <Toolbar className={classes.toolbar}>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Veille technologique
         </Typography>
