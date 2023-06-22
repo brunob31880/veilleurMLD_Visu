@@ -32,12 +32,12 @@ const HomePage = ({ veille, tuyau }) => {
   // Etiquette en modification (tab 0)
   const [selectedEtiquette, setSelectedEtiquette] = useState(null);
   const [filteredEtiquettes, setFilteredEtiquettes] = useState(null);
-  
+
   //console.log("Veille", veille)
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
- 
+
   // const location = useLocation();
   const handleEtiquetteClick = (etiquette, index) => {
     if (selectedTab === 0) {
@@ -58,17 +58,29 @@ const HomePage = ({ veille, tuyau }) => {
   };
   /**
    * 
+   * @param {*} start 
+   * @param {*} end 
+   * @param {*} key 
    */
   const handleFilteredClick = (start, end, key) => {
     let res = [];
+    let t1, t2;
+    if (start) {
+      t1 = Math.floor(start.getTime());
+    }
+    else t1 = Math.floor(new Date(2010, 0, 1).getTime());
+    if (end) {
+      t2 = Math.floor(end.getTime());
+    }
+    else t2 = Math.floor(new Date().getTime());
+
     console.log("Search between ", start, "and ", end, " for keyword " + key);
-    const t1 = Math.floor(start.getTime());
-    const t2 = Math.floor(end.getTime());
     console.log("Search betweenn ", t1, "and ", t2);
     tableauFusionne(veille, tuyau).forEach((elt) => {
       console.log("Element ", elt)
       const { objectId, channel_name, user_name, subject, text, timestamp, url } = JSON.parse(JSON.stringify(elt));
       console.log(subject + ' ' + key, ' timestamp ' + timestamp + ' t1 ' + t1 + ' t2 ' + t2)
+      // selection entre deux date ce qui est théoriquement le cas arrivé ici
       if (timestamp > t1 && timestamp < t2 && subject.indexOf(key) !== -1) res.push(elt);
     })
     setFilteredEtiquettes(res)
@@ -114,7 +126,7 @@ const HomePage = ({ veille, tuyau }) => {
             <div style={{ flex: 1 }}>
               <ModifEtiquette />
             </div>
-           
+
           </div>
         </TabPanel>
 

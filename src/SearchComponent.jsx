@@ -29,8 +29,7 @@ const SearchComponent = () => {
     console.log('StartDate:', startDate);
     console.log('EndDate:', endDate);
     console.log('SelectedKeyword:', selectedKeyword);
-    handleFilteredClick(startDate, endDate, selectedKeyword)
-
+    handleFilteredClick(startDate, endDate, selectedKeyword)  
   };
 
   return (
