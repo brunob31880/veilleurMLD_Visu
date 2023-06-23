@@ -54,7 +54,7 @@ const SearchComponent = () => {
         <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
         {filteredEtiquettes ? (`Recherche ${filteredEtiquettes.length} resultat(s)`) : 'Recherche'}
         </Typography>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{border: '2px solid rgb(10, 14, 74)',borderRadius:'5px', padding: '10px'}}>
           <FormControl fullWidth margin="normal">
             <DatePicker
               label="Début"
