@@ -51,7 +51,12 @@ function estChampVide(objet, champ) {
   return objet[champ][0] === '';
 }
 
-
+/**
+ * 
+ * @param {*} array 
+ * @param {*} n 
+ * @returns 
+ */
 export function head(array, n) {
   // Vérifie si le tableau est vide ou si n est inférieur ou égal à 0
   if (array.length === 0 || n <= 0) {
@@ -70,8 +75,25 @@ export function head(array, n) {
     //console.log(array[i]);
   }
 }
+/**
+ * 
+ * @param {*} arr1 
+ * @param {*} arr2 
+ * @returns 
+ */
+export function arraysAreEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) {
+      return false;
+  }
 
+  for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+          return false;
+      }
+  }
 
+  return true;
+}
 
 
 

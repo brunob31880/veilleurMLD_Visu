@@ -54,7 +54,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
     }
 
     const sujetClassName = estChampVide(sujet) ? "bold red" : "bold";
-    const texteClassName = estChampVide(texte) ? "red" : "";
+    //const texteClassName = estChampVide(texte) ? "red" : "";
 
     // Ajoutez ces deux états pour contrôler le menu popup
     const [anchorEl, setAnchorEl] = useState(null);
@@ -101,7 +101,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
             <div className="header">
                 <span className="bold">Date :</span> {formattedDate} |
                 <span className="bold">Canal :</span> {canal} |
-                <span className={sujetClassName}>Sujet :</span> {sujet}
+                <span className={sujetClassName}>Sujet :</span> {sujet.toString()}
                 {user && user.avatar ? (
                     <>
                         <span className="bold">Utilisateur :</span>
