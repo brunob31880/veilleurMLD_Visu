@@ -75,7 +75,7 @@ const HomePage = ({ veille, tuyau }) => {
     else t2 = Math.floor(new Date().getTime());
 
     console.log("Search between ", start, "and ", end, " for keyword " + key);
-    console.log("Search betweenn ", t1, "and ", t2);
+   
     tableauFusionne(veille, tuyau).forEach((elt) => {
       console.log("Element ", elt)
       const { objectId, channel_name, user_name, subject, text, timestamp, url } = JSON.parse(JSON.stringify(elt));
