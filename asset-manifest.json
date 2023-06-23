@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/veilleurMLD_Visu/static/css/main.9b8b4354.css",
-    "main.js": "/veilleurMLD_Visu/static/js/main.0ed614f7.js",
+    "main.css": "/veilleurMLD_Visu/static/css/main.da825a76.css",
+    "main.js": "/veilleurMLD_Visu/static/js/main.1c85fd63.js",
     "static/js/787.b9551075.chunk.js": "/veilleurMLD_Visu/static/js/787.b9551075.chunk.js",
     "index.html": "/veilleurMLD_Visu/index.html",
-    "main.9b8b4354.css.map": "/veilleurMLD_Visu/static/css/main.9b8b4354.css.map",
-    "main.0ed614f7.js.map": "/veilleurMLD_Visu/static/js/main.0ed614f7.js.map",
+    "main.da825a76.css.map": "/veilleurMLD_Visu/static/css/main.da825a76.css.map",
+    "main.1c85fd63.js.map": "/veilleurMLD_Visu/static/js/main.1c85fd63.js.map",
     "787.b9551075.chunk.js.map": "/veilleurMLD_Visu/static/js/787.b9551075.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.9b8b4354.css",
-    "static/js/main.0ed614f7.js"
+    "static/css/main.da825a76.css",
+    "static/js/main.1c85fd63.js"
   ]
 }
