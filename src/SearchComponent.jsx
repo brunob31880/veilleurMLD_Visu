@@ -10,10 +10,10 @@ const SearchComponent = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedKeyword, setSelectedKeyword] = useState([]);
-  const { handleFilteredClick } = useContext(FilteredEtiquetteContext);
+  const { filteredEtiquettes, handleFilteredClick } = useContext(FilteredEtiquetteContext);
   const { subjects } = useContext(VeilleTuyauContext); //
 
-  
+
   /**
    * 
    * @param {*} date 
@@ -52,7 +52,7 @@ const SearchComponent = () => {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Container fixed={true} maxWidth="sm">
         <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
-          Recherche
+        {filteredEtiquettes ? (`Recherche ${filteredEtiquettes.length} resultat(s)`) : 'Recherche'}
         </Typography>
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth margin="normal">
