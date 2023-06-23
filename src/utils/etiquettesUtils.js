@@ -52,6 +52,22 @@ export function filtrerObjetsBienRenseignes(tableau) {
     //console.log("Entrée:" + tableau.length + " Sortie:" + objetsBienRenseignes.length);
     return objetsBienRenseignes;
 }
+/**
+ * 
+ * @param {*} tableau 
+ * @returns 
+ */
+export function trierParTimestampDecroissant(tableau) {
+    return tableau.sort((a, b) => {
+        if (a.timestamp < b.timestamp) {
+            return 1;
+        } else if (a.timestamp > b.timestamp) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+}
 
 
 

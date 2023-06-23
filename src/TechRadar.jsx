@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState,  useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import './techradar.css';
@@ -7,7 +7,7 @@ import './techradar.css';
  * @param {*} param0 
  * @returns 
  */
-const TechRadarChart = ({ etiquettes }) => {
+const TechRadarChart = ({ etiquettes,selectedYear }) => {
   const [data, setData] = useState([])
   useEffect(() => {
     //console.log(etiquettes);
@@ -40,13 +40,15 @@ const TechRadarChart = ({ etiquettes }) => {
         tmp2.push({ subject: clé, A: valeur * 150 / tmp.length });
       }
     }
-
     setData(tmp2);
-  }, [etiquettes])
+  }, [etiquettes,selectedYear])
+
+
+
   console.log("DATAS=", data)
   return (
     data.length > 0 ?
-      <RadarChart cx={300} cy={250} outerRadius={150} width={800} height={800} data={data}>
+      <RadarChart cx={300} cy={350} outerRadius={300} width={800} height={800} data={data}>
         <PolarGrid />
         <PolarAngleAxis dataKey="subject" />
         <PolarRadiusAxis />

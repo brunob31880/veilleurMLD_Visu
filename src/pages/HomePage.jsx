@@ -1,12 +1,12 @@
 import React, { createContext, useState } from 'react';
-
+import { Select, MenuItem } from '@material-ui/core';
 import { Container, Typography, Box, Paper, Tabs, Tab } from '@mui/material';
 import SearchComponent from '../SearchComponent';
 import ListeEtiquettes from '../composants/ListeEtiquettes';
 import TechRadarChart from '../TechRadar';
 import ModifEtiquette from '../ModifEtiquette';
 import { tableauFusionne } from '../utils/arrayUtils';
-import { filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes } from '../utils/etiquettesUtils';
+import { trierParTimestampDecroissant, filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes } from '../utils/etiquettesUtils';
 // Créez un nouveau Context
 export const EtiquetteContext = createContext();
 // Créez un nouveau Context
@@ -32,7 +32,20 @@ const HomePage = ({ veille, tuyau }) => {
   // Etiquette en modification (tab 0)
   const [selectedEtiquette, setSelectedEtiquette] = useState(null);
   const [filteredEtiquettes, setFilteredEtiquettes] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+  };
+
+  const getYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = 2020; year <= currentYear; year++) {
+      years.push(<MenuItem value={year}>{year}</MenuItem>);
+    }
+    return years;
+  };
   //console.log("Veille", veille)
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -75,19 +88,25 @@ const HomePage = ({ veille, tuyau }) => {
     else t2 = Math.floor(new Date().getTime());
 
     console.log("Search between ", start, "and ", end, " for keyword " + key);
-   
-    tableauFusionne(veille, tuyau).forEach((elt) => {
+
+    trierParTimestampDecroissant(tableauFusionne(veille, tuyau)).forEach((elt) => {
       console.log("Element ", elt)
-      const { objectId, channel_name, user_name, subject, text, timestamp, url } = JSON.parse(JSON.stringify(elt));
-      console.log(subject + ' ' + key, ' timestamp ' + timestamp + ' t1 ' + t1 + ' t2 ' + t2)
+      const { subject, timestamp } = JSON.parse(JSON.stringify(elt));
+
+      console.log(subject + ' ' + " key=" + key, ' timestamp ' + timestamp + ' t1 ' + t1 + ' t2 ' + t2)
       // selection entre deux date ce qui est théoriquement le cas arrivé ici
-      if (timestamp > t1 && timestamp < t2 && subject.indexOf(key) !== -1) res.push(elt);
+
+      if (timestamp > t1 && timestamp < t2) {
+        subject.forEach(e => {
+          if (e.indexOf(key) !== -1) res.push(elt);
+        })
+      }
     })
     setFilteredEtiquettes(res)
   }
 
   const getFilteredEtiquettes = () => {
-    let fusion = tableauFusionne(veille, tuyau);
+    let fusion = trierParTimestampDecroissant(tableauFusionne(veille, tuyau));
     let malrenseignes = filtrerObjetsMalRenseignes(fusion)
     if (markedEtiquette) {
       malrenseignes.unshift(markedEtiquette);
@@ -143,9 +162,23 @@ const HomePage = ({ veille, tuyau }) => {
           </div>
         </TabPanel>
         <TabPanel value={selectedTab} index={2}>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <TechRadarChart etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+
+            <div style={{ flex: 1 }}>
+              <Select
+                value={selectedYear}
+                onChange={handleYearChange}
+                style={{ marginLeft: '20px' }}
+              >
+                {getYearOptions()}
+              </Select>
+            </div>
+            <div style={{ flex: 2 }}>
+              <TechRadarChart selectedYear={selectedYear} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+            </div>
+
           </div>
+
         </TabPanel>
       </Container>
     </EtiquetteContext.Provider>
