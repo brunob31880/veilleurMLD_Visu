@@ -4,14 +4,10 @@
  * @param {*} elements 
  */
 export function ajouterElements(tableau, elements) {
-  const tousPresent = elements.every((el) => tableau.includes(el));
-  if (tousPresent) {
-    //console.log("Les éléments sont déjà présents :", elements);
-  } else {
-    tableau.push(...elements);
-    //console.log("Éléments ajoutés :", elements);
-  }
+  const elementsNonPresents = elements.filter((el) => !tableau.includes(el));
+  tableau.push(...elementsNonPresents);
 }
+
 /**
  * 
  * @param {*} tableau1 

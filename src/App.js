@@ -1,7 +1,7 @@
+// eslint-disable-next-line react-hooks/exhaustive-deps
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
 import UnknownPage from "./pages/UnknownPage";
 import PrivateRoute from "./PrivateRoute";
 import Header from './Header';
@@ -16,6 +16,9 @@ function App() {
   const [subjects, setSubjects] = useState()
   const [client, setClient] = useState()
   const [team, setTeam] = useState()
+  /***
+   * 
+   */
   const load = (nomClasse, setTer, tmpSubjects) => {
     ParseClasse(nomClasse, (rep) => {
       //console.log("Rep=", rep)
@@ -25,17 +28,22 @@ function App() {
         tmp.push({ objectId: objectId, url: url, timestamp: timestamp, subject: subjects, text: text, channel_name: channel_name, user_name: user_name,thumbnail:thumbnail });
         ajouterElements(tmpSubjects, subjects);
       })
+      console.log("Setting ",nomClasse, " to ",tmp)
       setTer(tmp);
     })
   }
-
+  /**
+   * 
+   */
   const loadReload=()=>{
     let tmpSubjects = [];
     load("Veille",(u)=>setVeille(u),tmpSubjects);
     load("Tuyau",(u)=>setTuyau(u),tmpSubjects);
     setSubjects(tmpSubjects);
   }
-
+  /**
+   * 
+   */
   const loadTeam=()=>{
     ParseClasse("Team", (rep) => {
       let tmp = [];
@@ -45,8 +53,8 @@ function App() {
       })
       setTeam(tmp);
     })
-
   }
+ 
   useEffect(() => {
     bddConnection();
     loadReload();

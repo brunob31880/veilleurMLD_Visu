@@ -6,7 +6,7 @@
   margin-bottom: 10px;
   border-radius: 5px;
   background-color: rgb(13, 19, 34);
-  transition: background-color 0.3s ease;
+ 
 }
 @keyframes blink {
   0% {
@@ -26,14 +26,20 @@
 }
 
 .marked {
-  background-color: rgb(10, 14, 74);
+  background-color: rgb(20, 28, 148);
 }
 .selected{
   background-color: rgb(74, 74, 74);
 }
 
-.etiquette:hover {
-  background-color: lightgray;
+.normal:hover {
+  background-color: rgb(26, 38, 68);
+}
+.selected:hover {
+  background-color: rgb(148, 148, 148);
+}
+.marked:hover {
+  background-color: rgb(40, 56, 255);
 }
 
 .etiquette .header {

@@ -68,6 +68,16 @@ export function trierParTimestampDecroissant(tableau) {
         }
     });
 }
-
-
+/**
+ * 
+ * @param {*} shownEtiquetteId 
+ * @param {*} secondTabEtiquettes 
+ * @returns 
+ */
+export function getEtiquetteWithIn(shownEtiquetteId, secondTabEtiquettes) {
+    console.log(shownEtiquetteId)
+    const result = secondTabEtiquettes.filter(etiquette => etiquette.objectId === shownEtiquetteId);
+    return result[0];
+  }
+  
 

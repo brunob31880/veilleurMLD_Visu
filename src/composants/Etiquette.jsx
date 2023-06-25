@@ -20,14 +20,14 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
     // recupération du contexte au niveau de la racine (équipe)
     const { team } = useContext(VeilleTuyauContext);
     // recupération du contexte au niveau de la home page
-    const { markedEtiquette, selectedEtiquette } = useContext(EtiquetteContext);
+    const { markedEtiquette, selectedEtiquette, selectedTab,setShownEtiquetteId,setSelectedTab } = useContext(EtiquetteContext);
     //console.log("ObjectID: " + objectId, " markedEtiquette: ", markedEtiquette, " selectedEtiquette:", selectedEtiquette);
     const user = team ? team.find(member => member.user_name === user_name) : [];
 
     const getClassName = () => {
         if (selectedEtiquette && selectedEtiquette.objectId === objectId) return "etiquette selected"
         else if (markedEtiquette && markedEtiquette.objectId === objectId) return "etiquette marked"
-        else return "etiquette"
+        else return "etiquette normal"
     }
 
     const getShown = () => {
@@ -43,7 +43,6 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
                     <div style={{ flex: 1 }}>
                         <span className="bold">Texte :</span> <ReactMarkdown>{truncateText(texte, 100)}</ReactMarkdown>
                     </div>
-
                 </div>
             )
         } else {
@@ -80,10 +79,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
         setAnchorEl(null);
         handleOpenMenu(false);
     };
-    const handleSelect = () => {
-        handleOpenMenu(true, "select");
-        handleClose();
-    }
+   
     const handleDelete = () => {
         handleOpenMenu(true, "delete");
         deleteElementInClassWithId(getClassWithChannel(canal), objectId, () => {
@@ -93,6 +89,30 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
         });
         handleClose();
     }
+
+    const handleModifier = () => {
+        handleOpenMenu(true, "modify");
+        setSelectedTab(0);
+        handleClose();
+    }
+    const handleAfficher = () => {
+        handleOpenMenu(true, "show");
+        setShownEtiquetteId(objectId)
+        setSelectedTab(3);
+        handleClose();
+    }
+
+    const getMenuItems = () => {
+        return selectedTab === 0 ? [
+          <MenuItem key="effacer" onClick={handleDelete}>Effacer</MenuItem>,
+          <MenuItem key="selectionner" onClick={handleAfficher}>Afficher</MenuItem>
+        ] :
+        [
+          <MenuItem key="afficher" onClick={handleAfficher}>Afficher</MenuItem>,
+          <MenuItem key="modifier" onClick={handleModifier}>Modifier</MenuItem>
+        ];
+      };
+      
     return (
         <div className={getClassName()} style={{
             color: 'white',
@@ -122,8 +142,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
                 open={open}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleDelete}>Effacer</MenuItem>
-                <MenuItem onClick={handleSelect}>Selectionner</MenuItem>
+                {getMenuItems()}
             </Menu>
         </div>
 

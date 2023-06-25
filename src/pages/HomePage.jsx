@@ -1,17 +1,26 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import { Select, MenuItem } from '@material-ui/core';
 import { Container, Typography, Box, Paper, Tabs, Tab } from '@mui/material';
+import { trouverUrls } from '../utils/textUtils';
+import { modifyElementInClassWithId } from '../utils/parseUtils';
+import { getClassWithChannel } from '../utils/mtmUtils';
 import SearchComponent from '../SearchComponent';
 import ListeEtiquettes from '../composants/ListeEtiquettes';
 import TechRadarChart from '../TechRadar';
 import ModifEtiquette from '../ModifEtiquette';
-import { tableauFusionne,arraysAreEqual } from '../utils/arrayUtils';
+import ReactMarkdown from 'react-markdown';
+import MarkdownEditor from '../composants/MarkdownEditor';
+import { tableauFusionne, arraysAreEqual } from '../utils/arrayUtils';
 import { ErrorBoundary } from '../composants/ErrorBoundary';
-import { trierParTimestampDecroissant, filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes } from '../utils/etiquettesUtils';
+import { trierParTimestampDecroissant, filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes, getEtiquetteWithIn } from '../utils/etiquettesUtils';
 // Créez un nouveau Context
 export const EtiquetteContext = createContext();
-// Créez un nouveau Context
 export const FilteredEtiquetteContext = createContext();
+/**
+ * 
+ * @param {*} props 
+ * @returns 
+ */
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
@@ -32,9 +41,28 @@ const HomePage = ({ veille, tuyau }) => {
   const [markedEtiquette, setMarkedEtiquette] = useState(null);
   // Etiquette en modification (tab 0)
   const [selectedEtiquette, setSelectedEtiquette] = useState(null);
-  const [filteredEtiquettes, setFilteredEtiquettes] = useState(null);
+  // Etiquette filtrée tab 1
+  const [secondTabEtiquettes, setsecondTabEtiquettes] = useState(null);
+  // Etiquettes présentées en tab 0
+  const [firstTabEtiquette, setFirstTabEtiquette] = useState(null)
+  // Année sélectionnée 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-
+  // Etiquette presentant l'article à lire
+  const [shownEtiquetteId, setShownEtiquetteId] = useState(null);
+  // choix pris dans la tab de recherche 
+  const searched = useRef({
+    start: null,
+    end: null,
+    key: null
+  });
+  // eventuellement la valeur dans l'editeur de markdown 
+  const markdown = useRef({
+    text: null,
+  });
+  /**
+   * 
+   * @param {*} event 
+   */
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
   };
@@ -48,14 +76,20 @@ const HomePage = ({ veille, tuyau }) => {
     return years;
   };
 
-
-
-  //console.log("Veille", veille)
+  /**
+   * 
+   * @param {*} event 
+   * @param {*} newValue 
+   */
   const handleChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
 
-  // const location = useLocation();
+  /**
+   * 
+   * @param {*} etiquette 
+   * @param {*} index 
+   */
   const handleEtiquetteClick = (etiquette, index) => {
     if (selectedTab === 0) {
       console.log("Setting selected ", etiquette, " on tab ", selectedTab)
@@ -64,15 +98,24 @@ const HomePage = ({ veille, tuyau }) => {
         const selectedEtiquetteElement = document.getElementById(`etiquette-${index}`);
         const offsetTop = selectedEtiquetteElement.offsetTop;
         setSelectedEtiquette({ ...etiquette, offsetTop: offsetTop });
-        // console.log("OffsetTop: " + offsetTop)
       }
     }
     else if (selectedTab === 1) {
       console.log("Setting marked ", etiquette, " on tab ", selectedTab)
       if (markedEtiquette && markedEtiquette.objectId === etiquette.objectId) setMarkedEtiquette(null)
-      else setMarkedEtiquette(etiquette)
+      else {
+        setMarkedEtiquette(etiquette)
+        setSelectedTab(0);
+      }
     }
   };
+  /**
+   * Au changement de tab pour ==>1 plus de selected
+   * 
+   */
+  useEffect(() => {
+    if (selectedTab === 1) setSelectedEtiquette(null)
+  }, [selectedTab])
   /**
    * 
    * @param {*} start 
@@ -80,42 +123,88 @@ const HomePage = ({ veille, tuyau }) => {
    * @param {*} key 
    */
   const handleFilteredClick = (start, end, key) => {
+    searched.current = {
+      start: start,
+      end: end,
+      key: key
+    };
+    setSecondTabEtiquettes(start, end, key);
+  }
+  /**
+   * Donne les étiquettes a représenter sur le second tab 
+   * @param {*} start 
+   * @param {*} end 
+   * @param {*} key 
+   */
+  const setSecondTabEtiquettes = (start, end, key) => {
     let res = [];
-    let t1, t2;
-    if (start) {
-      t1 = Math.floor(start.getTime());
-    }
-    else t1 = Math.floor(new Date(2010, 0, 1).getTime());
-    if (end) {
-      t2 = Math.floor(end.getTime());
-    }
-    else t2 = Math.floor(new Date().getTime());
-
-    console.log("Search between ", t1, "and ", t2, " for keyword " + key);
-
-    trierParTimestampDecroissant(tableauFusionne(veille, tuyau)).forEach((elt) => {
-      //console.log("Element ", elt)
-      const { subject, timestamp } = JSON.parse(JSON.stringify(elt));
-      //console.log(subject + ' ' + " key=" + key, ' timestamp ' + timestamp + ' t1 ' + t1 + ' t2 ' + t2)
-      // selection entre deux date ce qui est théoriquement le cas arrivé ici
-      if (timestamp > t1 && timestamp < t2) {
-        if (arraysAreEqual(subject,key)) res.push(elt);
+    console.log("Key=" + key)
+    if (!key) setsecondTabEtiquettes(res)
+    else {
+      let t1, t2;
+      if (start) {
+        t1 = Math.floor(start.getTime());
       }
-    })
-    setFilteredEtiquettes(res)
+      else t1 = Math.floor(new Date(2010, 0, 1).getTime());
+      if (end) {
+        t2 = Math.floor(end.getTime());
+      }
+      else t2 = Math.floor(new Date().getTime());
+      console.log("Search between ", t1, "and ", t2, " for keyword " + key);
+      trierParTimestampDecroissant(tableauFusionne(veille, tuyau)).forEach((elt) => {
+        const { subject, timestamp } = JSON.parse(JSON.stringify(elt));
+        if (timestamp > t1 && timestamp < t2) {
+          if (arraysAreEqual(subject, key)) res.push(elt);
+        }
+      })
+      setsecondTabEtiquettes(res)
+    }
   }
 
-  const getFilteredEtiquettes = () => {
+  useEffect(() => {
+    setSecondTabEtiquettes(searched.current.getSecondTabEtiquettesstart, searched.current.end, searched.current.key)
+
+  }, [tuyau, veille]);
+
+  useEffect(() => {
     let fusion = trierParTimestampDecroissant(tableauFusionne(veille, tuyau));
     let malrenseignes = filtrerObjetsMalRenseignes(fusion)
     if (markedEtiquette) {
       malrenseignes.unshift(markedEtiquette);
     }
-    return malrenseignes
+    setFirstTabEtiquette(malrenseignes)
+  }, [veille, tuyau, markedEtiquette]);
+  /**
+   * 
+   * @param {*} val 
+   */
+  const setMarkdown = (val) => {
+    markdown.current.text = val;
   }
-
+  /**
+   * 
+   * @param {*} sujetFinal 
+   * @param {*} canal 
+   * @param {*} timestamp 
+   */
+  const onModifForMarkdown = (sujetFinal, canal, timestamp) => {
+    const tabnewvalues = [
+      { champ: 'Date', valeurchamp: timestamp },
+      // on passe un tableau car subjects est un tableau
+      { champ: 'subjects', valeurchamp: sujetFinal },
+      { champ: 'channel_name', valeurchamp: canal },
+      { champ: 'text', valeurchamp: markdown.current.text },
+      // a voir pour inclure un tableau d'urls
+      { champ: 'url', valeurchamp: trouverUrls(markdown.current.text)[0] },
+    ];
+    modifyElementInClassWithId(getClassWithChannel(canal), selectedEtiquette.objectId, tabnewvalues, () => {
+      console.log("Done");
+    }, (err) => {
+      console.log("Error");
+    });
+  }
   return (
-    <EtiquetteContext.Provider value={{ selectedEtiquette, markedEtiquette, handleEtiquetteClick }}>
+    <EtiquetteContext.Provider value={{ selectedEtiquette, markedEtiquette, handleEtiquetteClick, selectedTab, setSelectedTab, setShownEtiquetteId, firstTabEtiquette }}>
       <ErrorBoundary>
         <Container maxWidth="xl" >
           <Typography variant="h2" gutterBottom>
@@ -136,25 +225,41 @@ const HomePage = ({ veille, tuyau }) => {
               <Tab label="Completion" />
               <Tab label="Recherche" />
               <Tab label="TechRadar" />
+              <Tab label="Article" />
             </Tabs>
           </Paper>
           <TabPanel value={selectedTab} index={0}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }} >
-              <div style={{ flex: 2 }}>
-                <ListeEtiquettes etiquettes={getFilteredEtiquettes()} />
+            {firstTabEtiquette && firstTabEtiquette.length === 1 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1 }}>
+                    <ListeEtiquettes etiquettes={firstTabEtiquette} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <ModifEtiquette onModifForMarkdown={onModifForMarkdown} />
+                  </div>
+                </div>
+                <div style={{ width: '100%' }}>
+                  <MarkdownEditor setMarkdown={setMarkdown} />
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <ModifEtiquette />
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+                <div style={{ flex: 2 }}>
+                  <ListeEtiquettes etiquettes={firstTabEtiquette} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <ModifEtiquette />
+                </div>
               </div>
 
-            </div>
+            )}
           </TabPanel>
-
           <TabPanel value={selectedTab} index={1}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-              <FilteredEtiquetteContext.Provider value={{ filteredEtiquettes, handleFilteredClick }}>
+              <FilteredEtiquetteContext.Provider value={{ secondTabEtiquettes, handleFilteredClick }}>
                 <div style={{ flex: 2 }}>
-                  <ListeEtiquettes etiquettes={filteredEtiquettes} />
+                  <ListeEtiquettes etiquettes={secondTabEtiquettes} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <SearchComponent />
@@ -179,11 +284,15 @@ const HomePage = ({ veille, tuyau }) => {
               </div>
 
             </div>
-
+          </TabPanel>
+          <TabPanel value={selectedTab} index={3}>
+            {shownEtiquetteId ?
+              <ReactMarkdown>{getEtiquetteWithIn(shownEtiquetteId, secondTabEtiquettes).text}</ReactMarkdown>
+              : <></>}
           </TabPanel>
         </Container>
       </ErrorBoundary>
-    </EtiquetteContext.Provider>
+    </EtiquetteContext.Provider >
   );
 };
 

@@ -9,16 +9,20 @@ import { getClassWithChannel } from './utils/mtmUtils';
 import VeilleTuyauContext from './VeilleTuyauContext';
 
 
-
-const ModifEtiquette = () => {
+/**
+ * 
+ * @param {*} param0 
+ * @returns 
+ */
+const ModifEtiquette = ({ onModifForMarkdown }) => {
     const [date, setDate] = useState(null);
     const [canal, setCanal] = useState('');
     const [sujet, setSujet] = useState([]);
     const [texte, setTexte] = useState('');
-    const { selectedEtiquette } = useContext(EtiquetteContext);
+    const { selectedEtiquette, firstTabEtiquette } = useContext(EtiquetteContext);
     const { subjects } = useContext(VeilleTuyauContext); //
     const [nouveauSujet, setNouveauSujet] = useState('');
-    
+
 
     useEffect(() => {
         if (selectedEtiquette) {
@@ -56,17 +60,16 @@ const ModifEtiquette = () => {
     const handleTexteChange = (event) => {
         setTexte(event.target.value);
     };
-
+    /**
+     * 
+     * @param {*} event 
+     */
     const handleSubmit = (event) => {
-
         event.preventDefault();
-
         // Utiliser soit le sujet sélectionné, soit le nouveau sujet
         const sujetFinal = nouveauSujet !== '' ? [nouveauSujet] : sujet;
-
-
         const timestamp = Math.floor(date.getTime() / 1000);
-        //console.log(trouverUrls(texte));
+       
         const tabnewvalues = [
             { champ: 'Date', valeurchamp: timestamp },
             // on passe un tableau car subjects est un tableau
@@ -76,14 +79,21 @@ const ModifEtiquette = () => {
             // a voir pour inclure un tableau d'urls
             { champ: 'url', valeurchamp: trouverUrls(texte)[0] },
         ];
-        modifyElementInClassWithId(getClassWithChannel(canal), selectedEtiquette.objectId, tabnewvalues, () => {
-            console.log("Done");
-        }, (err) => {
-            console.log("Error");
-        });
+
+
+        if (firstTabEtiquette.length > 1) {
+            modifyElementInClassWithId(getClassWithChannel(canal), selectedEtiquette.objectId, tabnewvalues, () => {
+                console.log("Done");
+            }, (err) => {
+                console.log("Error");
+            });
+        }
+        else {
+            onModifForMarkdown(sujetFinal,canal,timestamp);
+        }
 
     };
- 
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Container fixed={true} maxWidth="sm" style={{ marginTop: selectedEtiquette ? (selectedEtiquette.offsetTop - 400 > 0 ? selectedEtiquette.offsetTop - 400 : 0) : 0 }}>
@@ -92,7 +102,7 @@ const ModifEtiquette = () => {
                         <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
                             Modification
                         </Typography>
-                        <form onSubmit={handleSubmit} style={{border: '2px solid rgb(10, 14, 74)',borderRadius:'5px', padding: '10px'}}>
+                        <form onSubmit={handleSubmit} style={{ border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
                             <FormControl fullWidth margin="normal">
                                 <DatePicker
                                     label="Date"
@@ -122,10 +132,11 @@ const ModifEtiquette = () => {
                             <FormControl fullWidth margin="normal">
                                 <TextField placeholder="Nouveau sujet" value={nouveauSujet} onChange={(event) => setNouveauSujet(event.target.value)} />
                             </FormControl>
-                            <FormControl fullWidth margin="normal">
-                                <TextField placeholder="Texte" value={texte} onChange={handleTexteChange} />
-                            </FormControl>
-
+                            {firstTabEtiquette.length !== 1 &&
+                                <FormControl fullWidth margin="normal">
+                                    <TextField placeholder="Texte" value={texte} onChange={handleTexteChange} />
+                                </FormControl>
+                            }
                             <Button sx={{
                                 backgroundColor: '#06090D',
                                 color: '#ffffff',
