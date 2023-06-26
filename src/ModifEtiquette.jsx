@@ -69,7 +69,7 @@ const ModifEtiquette = ({ onModifForMarkdown }) => {
         // Utiliser soit le sujet sélectionné, soit le nouveau sujet
         const sujetFinal = nouveauSujet !== '' ? [nouveauSujet] : sujet;
         const timestamp = Math.floor(date.getTime() / 1000);
-       
+
         const tabnewvalues = [
             { champ: 'Date', valeurchamp: timestamp },
             // on passe un tableau car subjects est un tableau
@@ -89,65 +89,71 @@ const ModifEtiquette = ({ onModifForMarkdown }) => {
             });
         }
         else {
-            onModifForMarkdown(sujetFinal,canal,timestamp);
+            onModifForMarkdown(sujetFinal, canal, timestamp);
         }
 
     };
 
+
+
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Container fixed={true} maxWidth="sm" style={{ marginTop: selectedEtiquette ? (selectedEtiquette.offsetTop - 400 > 0 ? selectedEtiquette.offsetTop - 400 : 0) : 0 }}>
-                {selectedEtiquette &&
-                    <>
-                        <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
-                            Modification
-                        </Typography>
-                        <form onSubmit={handleSubmit} style={{ border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
-                            <FormControl fullWidth margin="normal">
-                                <DatePicker
-                                    label="Date"
-                                    value={date}
-                                    onChange={handleDateChange}
-                                    renderInput={(params) => <TextField {...params} InputLabelProps={{ shrink: true }} />}
-                                />
-                            </FormControl>
-                            <FormControl fullWidth margin="normal">
-                                <TextField placeholder="Canal" value={canal} onChange={handleCanalChange} />
-                            </FormControl>
-                            <FormControl fullWidth margin="normal">
-                                <Select
-                                    multiple
-                                    value={sujet}
-                                    onChange={handleSujetChange}
+                <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
+                    Modification
+                </Typography>
+                {selectedEtiquette ? ( // Vérifier si selectedEtiquette existe
+                    <form onSubmit={handleSubmit} style={{ border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
+                        <FormControl fullWidth margin="normal">
+                            <DatePicker
+                                label="Date"
+                                value={date}
+                                onChange={handleDateChange}
+                                disabled={!selectedEtiquette} // Désactiver si selectedEtiquette est null ou undefined
+                                renderInput={(params) => <TextField {...params} InputLabelProps={{ shrink: true }} />}
+                            />
+                        </FormControl>
+                        <FormControl fullWidth margin="normal">
+                            <TextField placeholder="Canal" value={canal} onChange={handleCanalChange} />
+                        </FormControl>
+                        <FormControl fullWidth margin="normal">
+                            <Select
+                                multiple
+                                value={sujet}
+                                onChange={handleSujetChange}
 
-                                >
-                                    <MenuItem value="">Sélectionnez un sujet</MenuItem>
-                                    {subjects.map((sujet) => (
-                                        <MenuItem key={sujet} value={sujet}>
-                                            {sujet}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            >
+                                <MenuItem value="">Sélectionnez un sujet</MenuItem>
+                                {subjects.map((sujet) => (
+                                    <MenuItem key={sujet} value={sujet}>
+                                        {sujet}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth margin="normal">
+                            <TextField placeholder="Nouveau sujet" value={nouveauSujet} onChange={(event) => setNouveauSujet(event.target.value)} />
+                        </FormControl>
+                        {firstTabEtiquette.length !== 1 &&
                             <FormControl fullWidth margin="normal">
-                                <TextField placeholder="Nouveau sujet" value={nouveauSujet} onChange={(event) => setNouveauSujet(event.target.value)} />
+                                <TextField placeholder="Texte" value={texte} onChange={handleTexteChange} />
                             </FormControl>
-                            {firstTabEtiquette.length !== 1 &&
-                                <FormControl fullWidth margin="normal">
-                                    <TextField placeholder="Texte" value={texte} onChange={handleTexteChange} />
-                                </FormControl>
-                            }
-                            <Button sx={{
-                                backgroundColor: '#06090D',
-                                color: '#ffffff',
-                                '&:hover': {
-                                    backgroundColor: '#0A1218',
-                                },
-                            }} variant="contained" fullWidth type="submit">
-                                Soumettre
-                            </Button>
-                        </form>
-                    </>}
+                        }
+                        <Button sx={{
+                            backgroundColor: '#06090D',
+                            color: '#ffffff',
+                            '&:hover': {
+                                backgroundColor: '#0A1218',
+                            },
+                        }} variant="contained" fullWidth type="submit">
+                            Soumettre
+                        </Button>
+                    </form>) : (
+                    <Typography variant="h6" style={{ textAlign: 'center' }}>
+                        Aucun élément sélectionné.
+                    </Typography>
+                )}
+
             </Container>
         </LocalizationProvider>
     );

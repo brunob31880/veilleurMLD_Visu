@@ -10,6 +10,7 @@ import TechRadarChart from '../TechRadar';
 import ModifEtiquette from '../ModifEtiquette';
 import ReactMarkdown from 'react-markdown';
 import MarkdownEditor from '../composants/MarkdownEditor';
+import { tabConfig } from '../config/config';
 import { tableauFusionne, arraysAreEqual } from '../utils/arrayUtils';
 import { ErrorBoundary } from '../composants/ErrorBoundary';
 import { trierParTimestampDecroissant, filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes, getEtiquetteWithIn } from '../utils/etiquettesUtils';
@@ -91,7 +92,7 @@ const HomePage = ({ veille, tuyau }) => {
    * @param {*} index 
    */
   const handleEtiquetteClick = (etiquette, index) => {
-    if (selectedTab === 0) {
+    if (selectedTab === tabConfig.indexOf("Completion")) {
       console.log("Setting selected ", etiquette, " on tab ", selectedTab)
       if (selectedEtiquette && selectedEtiquette.objectId === etiquette.objectId) setSelectedEtiquette(null)
       else {
@@ -100,12 +101,12 @@ const HomePage = ({ veille, tuyau }) => {
         setSelectedEtiquette({ ...etiquette, offsetTop: offsetTop });
       }
     }
-    else if (selectedTab === 1) {
+    else if (selectedTab === tabConfig.indexOf("Recherche")) {
       console.log("Setting marked ", etiquette, " on tab ", selectedTab)
       if (markedEtiquette && markedEtiquette.objectId === etiquette.objectId) setMarkedEtiquette(null)
       else {
         setMarkedEtiquette(etiquette)
-        setSelectedTab(0);
+        setSelectedTab(tabConfig.indexOf("Completion"));
       }
     }
   };
@@ -174,6 +175,13 @@ const HomePage = ({ veille, tuyau }) => {
     }
     setFirstTabEtiquette(malrenseignes)
   }, [veille, tuyau, markedEtiquette]);
+
+  /**
+   * Au démarrage on part sur la recherche
+   */
+  useEffect(() => {
+    setSelectedTab(tabConfig.indexOf("Recherche"))
+  }, []);
   /**
    * 
    * @param {*} val 
@@ -203,6 +211,41 @@ const HomePage = ({ veille, tuyau }) => {
       console.log("Error");
     });
   }
+
+  /**
+   * Affichage de la premiere vue tabulaire
+   * @returns 
+   */
+  const getFirstTab = () => {
+    if (firstTabEtiquette && firstTabEtiquette.length === 1) return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ flex: 1 }}>
+            <ListeEtiquettes etiquettes={firstTabEtiquette} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <ModifEtiquette onModifForMarkdown={onModifForMarkdown} />
+          </div>
+        </div>
+        <div className="markdown" style={{ width: '100%' }}>
+          <MarkdownEditor setMarkdown={setMarkdown} />
+        </div>
+      </div>
+    )
+    else return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+        <div style={{ flex: 2 }}>
+          <ListeEtiquettes etiquettes={firstTabEtiquette} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <ModifEtiquette />
+        </div>
+      </div>
+    )
+  }
+
+
+
   return (
     <EtiquetteContext.Provider value={{ selectedEtiquette, markedEtiquette, handleEtiquetteClick, selectedTab, setSelectedTab, setShownEtiquetteId, firstTabEtiquette }}>
       <ErrorBoundary>
@@ -222,40 +265,13 @@ const HomePage = ({ veille, tuyau }) => {
               centered
               variant="fullWidth"
             >
-              <Tab label="Completion" />
-              <Tab label="Recherche" />
-              <Tab label="TechRadar" />
-              <Tab label="Article" />
+              {tabConfig.map((label) => (
+                <Tab key={label} label={label} />
+              ))}
+
             </Tabs>
           </Paper>
           <TabPanel value={selectedTab} index={0}>
-            {firstTabEtiquette && firstTabEtiquette.length === 1 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <ListeEtiquettes etiquettes={firstTabEtiquette} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <ModifEtiquette onModifForMarkdown={onModifForMarkdown} />
-                  </div>
-                </div>
-                <div style={{ width: '100%' }}>
-                  <MarkdownEditor setMarkdown={setMarkdown} />
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-                <div style={{ flex: 2 }}>
-                  <ListeEtiquettes etiquettes={firstTabEtiquette} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <ModifEtiquette />
-                </div>
-              </div>
-
-            )}
-          </TabPanel>
-          <TabPanel value={selectedTab} index={1}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
               <FilteredEtiquetteContext.Provider value={{ secondTabEtiquettes, handleFilteredClick }}>
                 <div style={{ flex: 2 }}>
@@ -266,10 +282,18 @@ const HomePage = ({ veille, tuyau }) => {
                 </div>
               </FilteredEtiquetteContext.Provider>
             </div>
+
+          </TabPanel>
+          <TabPanel value={selectedTab} index={1}>
+            {getFirstTab()}
           </TabPanel>
           <TabPanel value={selectedTab} index={2}>
+            {shownEtiquetteId ?
+              <ReactMarkdown>{getEtiquetteWithIn(shownEtiquetteId, tableauFusionne(veille, tuyau)) ? getEtiquetteWithIn(shownEtiquetteId, tableauFusionne(veille, tuyau)).text : ""}</ReactMarkdown>
+              : <></>}
+          </TabPanel>
+          <TabPanel value={selectedTab} index={3}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-
               <div style={{ flex: 1 }}>
                 <Select
                   value={selectedYear}
@@ -282,13 +306,7 @@ const HomePage = ({ veille, tuyau }) => {
               <div style={{ flex: 2 }}>
                 <TechRadarChart selectedYear={selectedYear} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
               </div>
-
             </div>
-          </TabPanel>
-          <TabPanel value={selectedTab} index={3}>
-            {shownEtiquetteId ?
-              <ReactMarkdown>{getEtiquetteWithIn(shownEtiquetteId, secondTabEtiquettes).text}</ReactMarkdown>
-              : <></>}
           </TabPanel>
         </Container>
       </ErrorBoundary>

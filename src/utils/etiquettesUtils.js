@@ -75,7 +75,7 @@ export function trierParTimestampDecroissant(tableau) {
  * @returns 
  */
 export function getEtiquetteWithIn(shownEtiquetteId, secondTabEtiquettes) {
-    console.log(shownEtiquetteId)
+    console.log("ShownID="+shownEtiquetteId)
     const result = secondTabEtiquettes.filter(etiquette => etiquette.objectId === shownEtiquetteId);
     return result[0];
   }

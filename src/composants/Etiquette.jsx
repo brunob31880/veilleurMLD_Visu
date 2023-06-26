@@ -6,6 +6,7 @@ import VeilleTuyauContext from '../VeilleTuyauContext';
 import { EtiquetteContext } from '../pages/HomePage';
 import { Menu, MenuItem } from '@mui/material';
 import { getClassWithChannel } from '../utils/mtmUtils';
+import { tabConfig } from '../config/config';
 import { deleteElementInClassWithId } from '../utils/parseUtils';
 import './Etiquette.css';
 
@@ -20,7 +21,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
     // recupération du contexte au niveau de la racine (équipe)
     const { team } = useContext(VeilleTuyauContext);
     // recupération du contexte au niveau de la home page
-    const { markedEtiquette, selectedEtiquette, selectedTab,setShownEtiquetteId,setSelectedTab } = useContext(EtiquetteContext);
+    const { markedEtiquette, selectedEtiquette, selectedTab, setShownEtiquetteId, setSelectedTab } = useContext(EtiquetteContext);
     //console.log("ObjectID: " + objectId, " markedEtiquette: ", markedEtiquette, " selectedEtiquette:", selectedEtiquette);
     const user = team ? team.find(member => member.user_name === user_name) : [];
 
@@ -79,7 +80,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
         setAnchorEl(null);
         handleOpenMenu(false);
     };
-   
+
     const handleDelete = () => {
         handleOpenMenu(true, "delete");
         deleteElementInClassWithId(getClassWithChannel(canal), objectId, () => {
@@ -92,27 +93,28 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
 
     const handleModifier = () => {
         handleOpenMenu(true, "modify");
-        setSelectedTab(0);
+
+        setSelectedTab(tabConfig.indexOf("Completion"));
         handleClose();
     }
     const handleAfficher = () => {
         handleOpenMenu(true, "show");
         setShownEtiquetteId(objectId)
-        setSelectedTab(3);
+        setSelectedTab(tabConfig.indexOf("Article"));
         handleClose();
     }
 
     const getMenuItems = () => {
         return selectedTab === 0 ? [
-          <MenuItem key="effacer" onClick={handleDelete}>Effacer</MenuItem>,
-          <MenuItem key="selectionner" onClick={handleAfficher}>Afficher</MenuItem>
+            <MenuItem key="selectionner" onClick={handleAfficher}>Afficher</MenuItem>,
+            <MenuItem key="effacer" onClick={handleDelete}>Effacer</MenuItem>
         ] :
-        [
-          <MenuItem key="afficher" onClick={handleAfficher}>Afficher</MenuItem>,
-          <MenuItem key="modifier" onClick={handleModifier}>Modifier</MenuItem>
-        ];
-      };
-      
+            [
+                <MenuItem key="afficher" onClick={handleAfficher}>Afficher</MenuItem>,
+                <MenuItem key="modifier" onClick={handleModifier}>Modifier</MenuItem>
+            ];
+    };
+
     return (
         <div className={getClassName()} style={{
             color: 'white',
