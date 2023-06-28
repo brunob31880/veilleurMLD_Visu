@@ -39,7 +39,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
             return (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <a href={url} target="_blank" rel="noreferrer">
-                        <img src={thumbnailUrl} alt={url} style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+                        <img src={thumbnailUrl} alt={url} style={{ width: '200px', height: '200px', objectFit: 'contain' }} />
                     </a>
                     <div style={{ flex: 1 }}>
                         <span className="bold">Texte :</span> <ReactMarkdown>{truncateText(texte, 100)}</ReactMarkdown>
@@ -124,7 +124,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
                 <span className="bold">Date :</span> {formattedDate} |
                 <span className="bold">Canal :</span> {canal} |
                 <span className={sujetClassName}>Sujet :</span> {sujet.toString()}
-                {user && user.avatar ? (
+                {/*      {user && user.avatar ? (
                     <>
                         <span className="bold">Utilisateur :</span>
                         <img src={user.avatar.url} alt={user_name} style={{ width: '70px', height: '70px', borderRadius: '50%', border: '2px solid rgb(52, 170, 114)' }} />
@@ -134,6 +134,7 @@ const Etiquette = ({ objectId, date, canal, sujet, texte, url, thumbnail, user_n
                         <span className="bold">Utilisateur :</span> {user_name}
                     </>
                 )}
+                */}
             </div>
             {getShown()}
             <Menu

@@ -50,11 +50,14 @@ const HomePage = ({ veille, tuyau }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   // Etiquette presentant l'article à lire
   const [shownEtiquetteId, setShownEtiquetteId] = useState(null);
+  // Choix à représenter sujets/categories
+  const [drawchoice, setDrawChoice] = useState(null);
   // choix pris dans la tab de recherche 
   const searched = useRef({
     start: null,
     end: null,
-    key: null
+    key: null,
+    keyCondition: null
   });
   // eventuellement la valeur dans l'editeur de markdown 
   const markdown = useRef({
@@ -76,7 +79,17 @@ const HomePage = ({ veille, tuyau }) => {
     }
     return years;
   };
-
+  const getDrawOptions = () => {
+    return [
+      <MenuItem key="sujets" value="sujets">
+        Sujets
+      </MenuItem>,
+      <MenuItem key="categories" value="categories">
+        Catégories
+      </MenuItem>
+    ];
+  };
+  
   /**
    * 
    * @param {*} event 
@@ -122,14 +135,16 @@ const HomePage = ({ veille, tuyau }) => {
    * @param {*} start 
    * @param {*} end 
    * @param {*} key 
+   * @param {*} keyCondition 
    */
-  const handleFilteredClick = (start, end, key) => {
+  const handleFilteredClick = (start, end, key, keyCondition) => {
     searched.current = {
       start: start,
       end: end,
-      key: key
+      key: key,
+      keyCondition: keyCondition
     };
-    setSecondTabEtiquettes(start, end, key);
+    setSecondTabEtiquettes(start, end, key, keyCondition);
   }
   /**
    * Donne les étiquettes a représenter sur le second tab 
@@ -137,7 +152,7 @@ const HomePage = ({ veille, tuyau }) => {
    * @param {*} end 
    * @param {*} key 
    */
-  const setSecondTabEtiquettes = (start, end, key) => {
+  const setSecondTabEtiquettes = (start, end, key, keycondition) => {
     let res = [];
     console.log("Key=" + key)
     if (!key) setsecondTabEtiquettes(res)
@@ -155,15 +170,20 @@ const HomePage = ({ veille, tuyau }) => {
       trierParTimestampDecroissant(tableauFusionne(veille, tuyau)).forEach((elt) => {
         const { subject, timestamp } = JSON.parse(JSON.stringify(elt));
         if (timestamp > t1 && timestamp < t2) {
-          if (arraysAreEqual(subject, key)) res.push(elt);
+          if (keycondition === "ET" || key.length === 1) {
+            if (arraysAreEqual(subject, key)) res.push(elt);
+          } else if (keycondition === "OU" && key.length > 1) {
+            if (subject.some(v => key.includes(v))) res.push(elt);
+          }
         }
       })
       setsecondTabEtiquettes(res)
     }
   }
 
+
   useEffect(() => {
-    setSecondTabEtiquettes(searched.current.getSecondTabEtiquettesstart, searched.current.end, searched.current.key)
+    setSecondTabEtiquettes(searched.current.getSecondTabEtiquettesstart, searched.current.end, searched.current.key, "ET")
 
   }, [tuyau, veille]);
 
@@ -244,6 +264,44 @@ const HomePage = ({ veille, tuyau }) => {
     )
   }
 
+  const getTypo = () => {
+    if (selectedTab === tabConfig.indexOf('Recherche')) {
+      return (
+        <Typography variant="body1">
+          Cherchez des articles de veille ou bien des astuces
+        </Typography>
+      );
+    }
+
+    else if (selectedTab === tabConfig.indexOf('Completion')) {
+      return (
+        <Typography variant="body1">
+          Modifiez des articles de veille ou bien des astuces
+        </Typography>
+      );
+    }
+
+    else if (selectedTab === tabConfig.indexOf('Article')) {
+      return (
+        <Typography variant="body1">
+          Consultation d'un article de veille ou bien des astuces
+        </Typography>
+      );
+    }
+
+    else {
+      return (
+        <Typography variant="body1">
+          Synthèse de veilles technologies explorée en fonction du temps
+        </Typography>
+      );
+    }
+  }
+
+  const handleDrawChoiceChange = (event) => {
+    setDrawChoice(event.target.value);
+  };
+
 
 
   return (
@@ -251,11 +309,11 @@ const HomePage = ({ veille, tuyau }) => {
       <ErrorBoundary>
         <Container maxWidth="xl" >
           <Typography variant="h2" gutterBottom>
-            Bienvenue à la veille (et aux tuyaux) du pôle MLD
+            Bienvenue à la veille
           </Typography>
-          <Typography variant="body1">
-            Cherchez, Modifiez des articles de veille ou bien des astuces
-          </Typography>
+
+          {getTypo()}
+
           <Paper>
             <Tabs
               value={selectedTab}
@@ -294,7 +352,7 @@ const HomePage = ({ veille, tuyau }) => {
           </TabPanel>
           <TabPanel value={selectedTab} index={3}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Select
                   value={selectedYear}
                   onChange={handleYearChange}
@@ -302,12 +360,22 @@ const HomePage = ({ veille, tuyau }) => {
                 >
                   {getYearOptions()}
                 </Select>
+                <Select
+                  value={drawchoice}
+                  onChange={handleDrawChoiceChange}
+                  style={{ marginLeft: '20px', marginTop: '10px' }}
+                >
+                 {getDrawOptions()}
+                </Select>
               </div>
-              <div style={{ flex: 2 }}>
-                <TechRadarChart selectedYear={selectedYear} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+              <div style={{ flex: 5 }}>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <TechRadarChart selectedYear={selectedYear} drawchoice={drawchoice} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+                </div>
               </div>
             </div>
           </TabPanel>
+
         </Container>
       </ErrorBoundary>
     </EtiquetteContext.Provider >

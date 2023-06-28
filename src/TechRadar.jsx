@@ -1,58 +1,31 @@
 import React, { useState,  useEffect } from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,Legend } from 'recharts';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { generateDataCategory,generateData } from './utils/subjectsUtils';
 import './techradar.css';
 /**
  * 
  * @param {*} param0 
  * @returns 
  */
-const TechRadarChart = ({ etiquettes,selectedYear }) => {
+const TechRadarChart = ({ etiquettes,selectedYear,drawchoice }) => {
   const [data, setData] = useState([])
+  console.log('Drawchoice='+drawchoice)
   useEffect(() => {
-    //console.log(etiquettes);
-    let tmp = [];
-    etiquettes.forEach(etiquette => {
-      etiquette.subject.forEach(suj => {
-        tmp.push({
-          subject: suj, A: 50
-        })
-      })
-
-    })
-
-    const compteurSujets = {};
-    for (const element of tmp) {
-      const sujet = element.subject;
-      if (compteurSujets[sujet]) {
-        compteurSujets[sujet]++;
-      } else {
-        compteurSujets[sujet] = 1;
-      }
-    }
-    console.log("compteurSujets ", compteurSujets);
-    let tmp2 = [];
-
-
-    for (const clé in compteurSujets) {
-      if (compteurSujets.hasOwnProperty(clé)) {
-        const valeur = compteurSujets[clé];
-        tmp2.push({ subject: clé, A: valeur * 150 / tmp.length });
-      }
-    }
-    setData(tmp2);
-  }, [etiquettes,selectedYear])
+    setData(drawchoice==="categories"?generateDataCategory(etiquettes,selectedYear):generateData(etiquettes,selectedYear));
+  }, [etiquettes,selectedYear,drawchoice])
 
 
 
   console.log("DATAS=", data)
   return (
     data.length > 0 ?
-      <RadarChart cx={300} cy={350} outerRadius={300} width={800} height={800} data={data}>
+      <RadarChart cx={300} cy={350} outerRadius={300} width={700} height={500} data={data}>
         <PolarGrid />
         <PolarAngleAxis dataKey="subject" />
         <PolarRadiusAxis />
         <Radar name="A" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+        <Legend />
       </RadarChart>
       :
       <div className="spinner-container">

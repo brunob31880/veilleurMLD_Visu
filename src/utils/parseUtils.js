@@ -126,7 +126,13 @@ export function subscribeForWith(nameClasse, client, loadReload) {
         console.log("SubscribeFor " + nameClasse + " subscribe === undefined || subscribe === null");
     }
 }
-
+/**
+ * 
+ * @param {*} nomClasse 
+ * @param {*} id 
+ * @param {*} callbackOnDelete 
+ * @param {*} callbackError 
+ */
 export const deleteElementInClassWithId = (nomClasse, id, callbackOnDelete, callbackError) => {
     console.log("Deleting from", nomClasse, "with id", id);
     const classe = Parse.Object.extend(nomClasse);

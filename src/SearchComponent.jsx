@@ -10,6 +10,7 @@ const SearchComponent = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [selectedKeyword, setSelectedKeyword] = useState([]);
+  const [keywordCondition, setKeywordCondition] = useState("ET"); // Ajout de cet état
   const { filteredEtiquettes, handleFilteredClick } = useContext(FilteredEtiquetteContext);
   const { subjects } = useContext(VeilleTuyauContext); //
 
@@ -39,22 +40,29 @@ const SearchComponent = () => {
    * 
    * @param {*} event 
    */
+  const handleConditionChange = (event) => {
+    setKeywordCondition(event.target.value);
+  };
+  /**
+   * 
+   * @param {*} event 
+   */
   const handleSubmit = (event) => {
     event.preventDefault();
     // Effectuer une action avec les valeurs sélectionnées
-    console.log('StartDate:', startDate);
-    console.log('EndDate:', endDate);
-    console.log('SelectedKeyword:', selectedKeyword);
-    handleFilteredClick(startDate, endDate, selectedKeyword)
+    //console.log('StartDate:', startDate);
+    //console.log('EndDate:', endDate);
+    //console.log('SelectedKeyword:', selectedKeyword);
+    handleFilteredClick(startDate, endDate, selectedKeyword,keywordCondition)
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Container fixed={true} maxWidth="sm">
         <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
-        {filteredEtiquettes ? (`Recherche ${filteredEtiquettes.length} resultat(s)`) : 'Recherche'}
+          {filteredEtiquettes ? (`Recherche ${filteredEtiquettes.length} resultat(s)`) : 'Recherche'}
         </Typography>
-        <form onSubmit={handleSubmit} style={{border: '2px solid rgb(10, 14, 74)',borderRadius:'5px', padding: '10px'}}>
+        <form onSubmit={handleSubmit} style={{ border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
           <FormControl fullWidth margin="normal">
             <DatePicker
               label="Début"
@@ -71,14 +79,27 @@ const SearchComponent = () => {
               renderInput={(params) => <TextField {...params} InputLabelProps={{ shrink: true }} />}
             />
           </FormControl>
+          {selectedKeyword.length > 1 && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Condition</InputLabel>
+              <Select
+                value={keywordCondition}
+                onChange={handleConditionChange}
+              >
+                <MenuItem value="ET">ET</MenuItem>
+                <MenuItem value="OU">OU</MenuItem>
+              </Select>
+            </FormControl>
+          )}
           <FormControl fullWidth margin="normal">
-            <InputLabel>Mot(s)-clé</InputLabel>
+            <InputLabel>Sujet(s)</InputLabel>
             <Select
               multiple
               value={selectedKeyword}
               onChange={handleKeywordChange}
             >
-              <MenuItem value="">Sélectionnez un ou plusieurs mot-clé</MenuItem>
+
+              <MenuItem value="">Sélectionnez un ou plusieurs sujet(s)</MenuItem>
               {subjects.map((keyword) => (
                 <MenuItem key={keyword} value={keyword}>
                   {keyword}
