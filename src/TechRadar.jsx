@@ -1,32 +1,61 @@
-import React, { useState,  useEffect } from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,Legend } from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { generateDataCategory,generateData } from './utils/subjectsUtils';
+import { generateDataCategory, generateData } from './utils/subjectsUtils';
+import ReactWordcloud from 'react-wordcloud';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/animations/scale.css';
 import './techradar.css';
 /**
  * 
  * @param {*} param0 
  * @returns 
  */
-const TechRadarChart = ({ etiquettes,selectedYear,drawchoice }) => {
+const TechRadarChart = ({ etiquettes, daterange, datachoice, drawchoice }) => {
   const [data, setData] = useState([])
-  console.log('Drawchoice='+drawchoice)
+  console.log('datachoice=' + datachoice)
   useEffect(() => {
-    setData(drawchoice==="categories"?generateDataCategory(etiquettes,selectedYear):generateData(etiquettes,selectedYear));
-  }, [etiquettes,selectedYear,drawchoice])
+    setData(datachoice === "categories" ? generateDataCategory(etiquettes, daterange) : generateData(etiquettes, daterange));
+  }, [etiquettes, daterange, datachoice, drawchoice])
 
+  const options = {
+    colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"],
+    enableTooltip: true,
+    deterministic: false,
+    fontFamily: "impact",
+    fontSizes: [5, 60],
+    fontStyle: "normal",
+    fontWeight: "normal",
+    padding: 1,
+    rotations: 3,
+    rotationAngles: [0, 90],
+    scale: "sqrt",
+    spiral: "archimedean",
+    transitionDuration: 1000
+  };
 
+  const getView = () => {
+    if (drawchoice === "radarchart") {
+      return (
+        <RadarChart width={700} height={500} data={data}>
+          <PolarGrid />
+          <PolarAngleAxis dataKey="text" />
+          <PolarRadiusAxis />
+          <Radar name={datachoice === "categories" ? "categories " + daterange : "sujets " + daterange} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+          <Legend />
+        </RadarChart>
+      )
+    }
+    else if (drawchoice === "wordcloud") {
+      return <ReactWordcloud options={options} words={data} size={[600,400]}/>
+    }
+  }
 
   console.log("DATAS=", data)
+  console.log("DrawChoice=" + drawchoice)
   return (
     data.length > 0 ?
-      <RadarChart cx={300} cy={350} outerRadius={300} width={700} height={500} data={data}>
-        <PolarGrid />
-        <PolarAngleAxis dataKey="subject" />
-        <PolarRadiusAxis />
-        <Radar name="A" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-        <Legend />
-      </RadarChart>
+      getView()
       :
       <div className="spinner-container">
         <CircularProgress />

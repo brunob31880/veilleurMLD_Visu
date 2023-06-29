@@ -1,20 +1,22 @@
 import { classification } from "../config/config";
 /**
- * Generate data for radar chart based on etiquettes and year.
- * @param {Array} etiquettes - The etiquettes array.
- * @param {number} year - The year to filter the etiquettes.
- * @returns {Array} - The generated data for the radar chart.
+ * 
+ * @param {*} etiquettes 
+ * @param {*} daterange 
+ * @returns 
  */
-export function generateData(etiquettes, year) {
+export function generateData(etiquettes, daterange) {
     let tmp = [];
+    const startDate = daterange[0];
+    const endDate = daterange[1];
     etiquettes.forEach(etiquette => {
         const timestamp = etiquette.timestamp;
-        const etiquetteYear = new Date(timestamp).getFullYear();
-        if (etiquetteYear === year) {
+        const etiquetteDate = new Date(timestamp);
+        if (etiquetteDate >= startDate && etiquetteDate <= endDate) {
             etiquette.subject.forEach(suj => {
                 tmp.push({
-                    subject: suj,
-                    A: 0
+                    text: suj,
+                    value: 0
                 });
             });
         }
@@ -22,7 +24,7 @@ export function generateData(etiquettes, year) {
 
     const compteurSujets = {};
     for (const element of tmp) {
-        const sujet = element.subject;
+        const sujet = element.text;
         if (compteurSujets[sujet]) {
             compteurSujets[sujet]++;
         } else {
@@ -34,26 +36,32 @@ export function generateData(etiquettes, year) {
     for (const clé in compteurSujets) {
         if (compteurSujets.hasOwnProperty(clé)) {
             const valeur = compteurSujets[clé];
-            tmp2.push({ subject: clé, A: valeur * 100 / tmp.length });
+            tmp2.push({ text: clé, value: valeur * 100 / tmp.length });
         }
     }
 
     return tmp2;
 }
-export function generateDataCategory(etiquettes, year) {
-
+/**
+ * 
+ * @param {*} etiquettes 
+ * @param {*} daterange 
+ * @returns 
+ */
+export function generateDataCategory(etiquettes, daterange) {
     const categories = Object.keys(classification);
     const tmp = [];
-
+    const startDate = daterange[0];
+    const endDate = daterange[1];
     etiquettes.forEach(etiquette => {
         const { subject } = etiquette;
         const timestamp = etiquette.timestamp;
-        const etiquetteYear = new Date(timestamp).getFullYear();
-        if (etiquetteYear === year) {
+        const etiquetteDate = new Date(timestamp);
+        if (etiquetteDate >= startDate && etiquetteDate <= endDate) {
             categories.forEach(category => {
                 const keywords = classification[category];
                 if (keywords.some(keyword => subject.includes(keyword))) {
-                    tmp.push({ subject: category, A: 0 });
+                    tmp.push({ text: category, value: 0 });
                 }
             });
         }
@@ -61,7 +69,7 @@ export function generateDataCategory(etiquettes, year) {
 
     const compteurSujets = {};
     for (const element of tmp) {
-        const sujet = element.subject;
+        const sujet = element.text;
         if (compteurSujets[sujet]) {
             compteurSujets[sujet]++;
         } else {
@@ -73,7 +81,7 @@ export function generateDataCategory(etiquettes, year) {
     for (const clé in compteurSujets) {
         if (compteurSujets.hasOwnProperty(clé)) {
             const valeur = compteurSujets[clé];
-            tmp2.push({ subject: clé, A: valeur * 100 / tmp.length });
+            tmp2.push({ text: clé, value: valeur * 100 / tmp.length });
         }
     }
 

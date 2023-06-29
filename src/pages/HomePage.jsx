@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
+import DateRangePicker from '@wojtekmaj/react-daterange-picker';
 import { Select, MenuItem } from '@material-ui/core';
 import { Container, Typography, Box, Paper, Tabs, Tab } from '@mui/material';
 import { trouverUrls } from '../utils/textUtils';
@@ -14,6 +15,8 @@ import { tabConfig } from '../config/config';
 import { tableauFusionne, arraysAreEqual } from '../utils/arrayUtils';
 import { ErrorBoundary } from '../composants/ErrorBoundary';
 import { trierParTimestampDecroissant, filtrerObjetsMalRenseignes, filtrerObjetsBienRenseignes, getEtiquetteWithIn } from '../utils/etiquettesUtils';
+import '@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css';
+import 'react-calendar/dist/Calendar.css';
 // Créez un nouveau Context
 export const EtiquetteContext = createContext();
 export const FilteredEtiquetteContext = createContext();
@@ -46,12 +49,18 @@ const HomePage = ({ veille, tuyau }) => {
   const [secondTabEtiquettes, setsecondTabEtiquettes] = useState(null);
   // Etiquettes présentées en tab 0
   const [firstTabEtiquette, setFirstTabEtiquette] = useState(null)
-  // Année sélectionnée 
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   // Etiquette presentant l'article à lire
   const [shownEtiquetteId, setShownEtiquetteId] = useState(null);
   // Choix à représenter sujets/categories
+  const [datachoice, setDataChoice] = useState(null);
+  // Type de représentation
   const [drawchoice, setDrawChoice] = useState(null);
+
+  const now = new Date();
+  const yesterdayBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+  // plage temporelle
+  const [value, onChange] = useState([yesterdayBegin, todayEnd]);
   // choix pris dans la tab de recherche 
   const searched = useRef({
     start: null,
@@ -63,13 +72,7 @@ const HomePage = ({ veille, tuyau }) => {
   const markdown = useRef({
     text: null,
   });
-  /**
-   * 
-   * @param {*} event 
-   */
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
+ 
 
   const getYearOptions = () => {
     const currentYear = new Date().getFullYear();
@@ -79,7 +82,7 @@ const HomePage = ({ veille, tuyau }) => {
     }
     return years;
   };
-  const getDrawOptions = () => {
+  const getDataOptions = () => {
     return [
       <MenuItem key="sujets" value="sujets">
         Sujets
@@ -89,7 +92,16 @@ const HomePage = ({ veille, tuyau }) => {
       </MenuItem>
     ];
   };
-  
+  const getDrawOptions = () => {
+    return [
+      <MenuItem key="radarchart" value="radarchart">
+        RadarChart
+      </MenuItem>,
+      <MenuItem key="wordcloud" value="wordcloud">
+        WordCloud
+      </MenuItem>
+    ];
+  };
   /**
    * 
    * @param {*} event 
@@ -297,12 +309,20 @@ const HomePage = ({ veille, tuyau }) => {
       );
     }
   }
-
+  /**
+   * 
+   * @param {*} event 
+   */
+  const handleDataChoiceChange = (event) => {
+    setDataChoice(event.target.value);
+  };
+  /**
+   * 
+   * @param {*} event 
+   */
   const handleDrawChoiceChange = (event) => {
     setDrawChoice(event.target.value);
   };
-
-
 
   return (
     <EtiquetteContext.Provider value={{ selectedEtiquette, markedEtiquette, handleEtiquetteClick, selectedTab, setSelectedTab, setShownEtiquetteId, firstTabEtiquette }}>
@@ -352,30 +372,52 @@ const HomePage = ({ veille, tuyau }) => {
           </TabPanel>
           <TabPanel value={selectedTab} index={3}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <Select
-                  value={selectedYear}
-                  onChange={handleYearChange}
-                  style={{ marginLeft: '20px' }}
-                >
-                  {getYearOptions()}
-                </Select>
-                <Select
-                  value={drawchoice}
-                  onChange={handleDrawChoiceChange}
-                  style={{ marginLeft: '20px', marginTop: '10px' }}
-                >
-                 {getDrawOptions()}
-                </Select>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
+                <Typography variant="h6" style={{ marginLeft: '20px' }}>
+                  Plage temporelle
+                </Typography>
+
+                <DateRangePicker
+                  calendarAriaLabel="Toggle calendar"
+                  clearAriaLabel="Clear value"
+                  dayAriaLabel="Day"
+                  monthAriaLabel="Month"
+                  nativeInputAriaLabel="Date"
+                  onChange={onChange}
+                  yearAriaLabel="Year"
+                  value={value} />
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Typography variant="h6" style={{ marginLeft: '20px', marginTop: '10px' }}>
+                    Données
+                  </Typography>
+
+
+                  <Select
+                    value={datachoice}
+                    onChange={handleDataChoiceChange}
+                    style={{ marginLeft: '20px', marginTop: '10px' }}
+                  >
+                    {getDataOptions()}
+                  </Select>
+                  <Typography variant="h6" style={{ marginLeft: '20px', marginTop: '10px' }}>
+                    Représentation
+                  </Typography>
+                  <Select
+                    value={drawchoice}
+                    onChange={handleDrawChoiceChange}
+                    style={{ marginLeft: '20px', marginTop: '10px' }}
+                  >
+                    {getDrawOptions()}
+                  </Select>
+                </div>
               </div>
-              <div style={{ flex: 5 }}>
+              <div style={{ flex: 6 }}>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <TechRadarChart selectedYear={selectedYear} drawchoice={drawchoice} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+                  <TechRadarChart daterange={value} drawchoice={drawchoice} datachoice={datachoice} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
                 </div>
               </div>
             </div>
           </TabPanel>
-
         </Container>
       </ErrorBoundary>
     </EtiquetteContext.Provider >
