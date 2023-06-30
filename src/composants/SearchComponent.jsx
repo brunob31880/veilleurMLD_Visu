@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react';
 import { Button, FormControl, InputLabel, Container, Typography, TextField, Select, MenuItem } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { FilteredEtiquetteContext } from './pages/HomePage';
-import VeilleTuyauContext from './VeilleTuyauContext';
+import { FilteredEtiquetteContext } from '../pages/HomePage';
+import VeilleTuyauContext from '../VeilleTuyauContext';
 
 
 const SearchComponent = () => {
@@ -11,7 +11,7 @@ const SearchComponent = () => {
   const [endDate, setEndDate] = useState(null);
   const [selectedKeyword, setSelectedKeyword] = useState([]);
   const [keywordCondition, setKeywordCondition] = useState("ET"); // Ajout de cet état
-  const { filteredEtiquettes, handleFilteredClick } = useContext(FilteredEtiquetteContext);
+  const { secondTabEtiquettes, handleFilteredClick } = useContext(FilteredEtiquetteContext);
   const { subjects } = useContext(VeilleTuyauContext); //
 
 
@@ -56,11 +56,13 @@ const SearchComponent = () => {
     handleFilteredClick(startDate, endDate, selectedKeyword,keywordCondition)
   };
 
+  
+  
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Container fixed={true} maxWidth="sm">
         <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
-          {filteredEtiquettes ? (`Recherche ${filteredEtiquettes.length} resultat(s)`) : 'Recherche'}
+          {secondTabEtiquettes ? (`Recherche ${secondTabEtiquettes.length} resultat(s)`) : 'Recherche'}
         </Typography>
         <form onSubmit={handleSubmit} style={{ border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
           <FormControl fullWidth margin="normal">

@@ -34,6 +34,13 @@ const TechRadarChart = ({ etiquettes, daterange, datachoice, drawchoice }) => {
     transitionDuration: 1000
   };
 
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  const formattedDateRange = `${formatDate(daterange[0])}-${formatDate(daterange[1])}`;
+
+
   const getView = () => {
     if (drawchoice === "radarchart") {
       return (
@@ -41,13 +48,13 @@ const TechRadarChart = ({ etiquettes, daterange, datachoice, drawchoice }) => {
           <PolarGrid />
           <PolarAngleAxis dataKey="text" />
           <PolarRadiusAxis />
-          <Radar name={datachoice === "categories" ? "categories " + daterange : "sujets " + daterange} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+          <Radar name={datachoice === "categories" ? "categories " + formattedDateRange : "sujets " + formattedDateRange} dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
           <Legend />
         </RadarChart>
       )
     }
     else if (drawchoice === "wordcloud") {
-      return <ReactWordcloud options={options} words={data} size={[600,400]}/>
+      return <ReactWordcloud options={options} words={data} size={[700, 500]} />
     }
   }
 

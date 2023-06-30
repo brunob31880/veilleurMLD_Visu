@@ -7,7 +7,6 @@ export function ajouterElements(tableau, elements) {
   const elementsNonPresents = elements.filter((el) => !tableau.includes(el));
   tableau.push(...elementsNonPresents);
 }
-
 /**
  * 
  * @param {*} tableau1 
@@ -16,6 +15,12 @@ export function ajouterElements(tableau, elements) {
  */
 export const tableauFusionne = (tableau1, tableau2) => {
   try {
+    if (tableau1 === null || tableau1 === undefined) {
+      return tableau2 || [];
+    }
+    if (tableau2 === null || tableau2 === undefined) {
+      return tableau1 || [];
+    }
     const tableauFusionne = [...tableau1, ...tableau2];
     return tableauFusionne;
   } catch (error) {
