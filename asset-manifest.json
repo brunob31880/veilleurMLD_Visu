@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/veilleurMLD_Visu/static/css/main.356f4222.css",
-    "main.js": "/veilleurMLD_Visu/static/js/main.f21ec0bb.js",
+    "main.js": "/veilleurMLD_Visu/static/js/main.72d32fea.js",
     "static/js/787.b9551075.chunk.js": "/veilleurMLD_Visu/static/js/787.b9551075.chunk.js",
     "index.html": "/veilleurMLD_Visu/index.html",
     "main.356f4222.css.map": "/veilleurMLD_Visu/static/css/main.356f4222.css.map",
-    "main.f21ec0bb.js.map": "/veilleurMLD_Visu/static/js/main.f21ec0bb.js.map",
+    "main.72d32fea.js.map": "/veilleurMLD_Visu/static/js/main.72d32fea.js.map",
     "787.b9551075.chunk.js.map": "/veilleurMLD_Visu/static/js/787.b9551075.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.356f4222.css",
-    "static/js/main.f21ec0bb.js"
+    "static/js/main.72d32fea.js"
   ]
 }
