@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
         const keycloak = new Keycloak({
             "realm": "iet",
             "url": "https://sso.asap.dsna.fr/auth/",
-            "clientId": "react-auth",
+            "clientId": "bruno-github",
         });
         keycloak.init({}).then(authenticated => {
             setKeyCloak(keycloak);

@@ -1,4 +1,4 @@
-const { generateData } = require('./subjectsUtils');
+const { generateData,generateTimeData } = require('./subjectsUtils');
 
 describe('generateData', () => {
   it('should generate correct data', () => {

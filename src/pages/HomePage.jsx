@@ -6,7 +6,7 @@ import { modifyElementInClassWithId } from '../utils/parseUtils';
 import { getClassWithChannel } from '../utils/mtmUtils';
 import SearchComponent from '../composants/SearchComponent';
 import ListeEtiquettes from '../composants/ListeEtiquettes';
-import TechRadarChart from '../TechRadar';
+import DataRadarChart from '../composants/DataRadarChart';
 import ModifEtiquette from '../ModifEtiquette';
 import ReactMarkdown from 'react-markdown';
 import MarkdownEditor from '../composants/MarkdownEditor';
@@ -17,6 +17,8 @@ import { trierParTimestampDecroissant, filtrerObjetsMalRenseignes, filtrerObjets
 import '@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import GraphSelector from '../composants/GraphSelector';
+import TemporalChart from '../composants/TemporalChart';
+import GitlabTable from '../composants/GitlabTable';
 // Créez un nouveau Context
 export const EtiquetteContext = createContext();
 export const FilteredEtiquetteContext = createContext();
@@ -39,7 +41,7 @@ const TabPanel = (props) => {
  * @param {*} param0 
  * @returns 
  */
-const HomePage = ({ veille, tuyau }) => {
+const HomePage = ({ veille, tuyau, gitlab }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   // Etiquette marquée pour modification (tab 1)
   const [markedEtiquette, setMarkedEtiquette] = useState(null);
@@ -61,7 +63,7 @@ const HomePage = ({ veille, tuyau }) => {
   const [datachoice, setDataChoice] = useState(null);
   // Type de représentation
   const [drawchoice, setDrawChoice] = useState(null);
-  
+
   // choix pris dans la tab de recherche 
   const searched = useRef({
     start: null,
@@ -249,6 +251,31 @@ const HomePage = ({ veille, tuyau }) => {
     )
   }
 
+
+  const getThirdTab = () => {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
+              <GraphSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} datachoice={datachoice} drawchoice={drawchoice} setDataChoice={setDataChoice} setDrawChoice={setDrawChoice} />
+            </div>
+          </div>
+          <div style={{ flex: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <DataRadarChart daterange={[startDate, endDate]} drawchoice={drawchoice} datachoice={datachoice} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+            </div>
+          </div>
+        </div>
+        <div className="temporal" style={{ display: 'flex', width: '100%', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <TemporalChart daterange={[startDate, endDate]} drawchoice={drawchoice} datachoice={datachoice} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
+          <hr style={{ width:'100%', borderColor: 'green', borderWidth: 2, borderStyle: 'solid' }} />
+          <GitlabTable daterange={[startDate, endDate]} gitlab={gitlab} />
+        </div>
+
+      </div>
+    )
+  }
   const getTypo = () => {
     if (selectedTab === tabConfig.indexOf('Recherche')) {
       return (
@@ -282,7 +309,7 @@ const HomePage = ({ veille, tuyau }) => {
       );
     }
   }
-  
+
 
   return (
     <EtiquetteContext.Provider value={{ selectedEtiquette, markedEtiquette, handleEtiquetteClick, selectedTab, setSelectedTab, setShownEtiquetteId, firstTabEtiquette, secondTabEtiquettes }}>
@@ -331,16 +358,7 @@ const HomePage = ({ veille, tuyau }) => {
               : <></>}
           </TabPanel>
           <TabPanel value={selectedTab} index={3}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', border: '2px solid rgb(10, 14, 74)', borderRadius: '5px', padding: '10px' }}>
-                <GraphSelector startDate={startDate} endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} datachoice={datachoice} drawchoice={drawchoice} setDataChoice={setDataChoice} setDrawChoice={setDrawChoice}/>
-              </div>
-              <div style={{ flex: 6 }}>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <TechRadarChart daterange={[startDate,endDate]} drawchoice={drawchoice} datachoice={datachoice} etiquettes={filtrerObjetsBienRenseignes(tableauFusionne(veille, tuyau))} />
-                </div>
-              </div>
-            </div>
+            {getThirdTab()}
           </TabPanel>
         </Container>
       </ErrorBoundary>

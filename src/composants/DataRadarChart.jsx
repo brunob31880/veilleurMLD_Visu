@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend } from 'recharts';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { generateDataCategory, generateData } from './utils/subjectsUtils';
+import { generateDataCategory, generateData } from '../utils/subjectsUtils';
 import ReactWordcloud from 'react-wordcloud';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/scale.css';
@@ -11,7 +11,7 @@ import './techradar.css';
  * @param {*} param0 
  * @returns 
  */
-const TechRadarChart = ({ etiquettes, daterange, datachoice, drawchoice }) => {
+const DataRadarChart = ({ etiquettes, daterange, datachoice, drawchoice }) => {
   const [data, setData] = useState([])
   console.log('datachoice=' + datachoice)
   useEffect(() => {
@@ -70,4 +70,4 @@ const TechRadarChart = ({ etiquettes, daterange, datachoice, drawchoice }) => {
   );
 };
 
-export default TechRadarChart;
+export default DataRadarChart;
